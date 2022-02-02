@@ -29,8 +29,9 @@ func NewVaultSigner(client *api.Client, auth AuthMethod, backendName string) (*S
 	}
 
 	return &SignatureClient{
-		client:  client,
-		auth:    auth,
+		client: client,
+		auth:   auth,
+		// TODO: make  configurable
 		pathSsh: "ssh",
 		backend: backendName,
 	}, nil
