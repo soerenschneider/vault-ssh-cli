@@ -40,7 +40,7 @@ func (c *Config) Validate() []error {
 
 	emptyVaultToken := len(c.VaultToken) == 0
 	emptyRoleId := len(c.VaultRoleId) == 0
-	emptySecretId := len(c.VaultSecretId) == 0 || len(c.VaultSecretIdFile) == 0
+	emptySecretId := len(c.VaultSecretId) == 0 && len(c.VaultSecretIdFile) == 0
 	emptyAppRoleAuth := emptySecretId || emptyRoleId
 	if emptyAppRoleAuth && emptyVaultToken {
 		errs = append(errs, fmt.Errorf("neither '%s' nor AppRole auth info provided", FLAG_VAULT_TOKEN))
