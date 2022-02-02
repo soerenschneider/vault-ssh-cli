@@ -18,6 +18,8 @@ func NewAppRoleAuth(client *api.Client, loginData map[string]string) (*AppRoleAu
 	return &AppRoleAuth{
 		client:    client,
 		loginData: loginData,
+		// TODO: supply variable
+		approleMount: "approle",
 	}, nil
 }
 
