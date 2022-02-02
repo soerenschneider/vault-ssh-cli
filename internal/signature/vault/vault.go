@@ -40,6 +40,7 @@ func (c *SignatureClient) signPublicKey(backend string, publicKeyData string) (s
 	path := fmt.Sprintf("%s/sign/%s", c.pathSsh, backend)
 	data := map[string]interface{}{
 		"public_key": publicKeyData,
+		"cert_type":  "host",
 	}
 	secret, err := c.client.Logical().Write(path, data)
 	if err != nil {
