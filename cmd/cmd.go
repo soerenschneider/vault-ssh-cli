@@ -137,8 +137,8 @@ func initializeConfig(cmd *cobra.Command) error {
 	v.SetConfigName(defaultConfigFilename)
 
 	v.AddConfigPath(".")
-	v.AddConfigPath("$HOME/.config/ssh_key_signer")
-	v.AddConfigPath("/etc/ssh_key_signer/")
+	v.AddConfigPath("$HOME/.config/ssh-key-signer")
+	v.AddConfigPath("/etc/ssh-key-signer/")
 	v.AddConfigPath("/etc/")
 
 	if err := v.ReadInConfig(); err != nil {
