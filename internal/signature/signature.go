@@ -35,9 +35,11 @@ func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
 	if err != nil {
 		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)
 	}
+
+	currentSignedKeyData, err := signedKey.Read()
 	if err == nil {
 		// on the first run the signed key data is not available, yet
-		certInfo, err := ssh.ParseCertData(pubKeyData)
+		certInfo, err := ssh.ParseCertData(currentSignedKeyData)
 		if err != nil {
 			return fmt.Errorf("could not read certificate: %v", err)
 		}
@@ -51,27 +53,27 @@ func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
 		log.Info().Msg("Requesting new signature for public key")
 	}
 
-	pubKeyData, err = pubKey.Read()
+	pubKeyData, err := pubKey.Read()
 	if err != nil {
 		return fmt.Errorf("could not read public key data: %v", err)
 	}
 
-	signedData, err := i.signerImpl.SignPublicKey(string(pubKeyData))
+	newSignedKeyData, err := i.signerImpl.SignPublicKey(string(pubKeyData))
 	if err != nil {
 		return fmt.Errorf("could not sign public key: %v", err)
 	}
+	log.Info().Msg("Received signed cert")
 
-	certInfo, err := ssh.ParseCertData([]byte(signedData))
+	certInfo, err := ssh.ParseCertData([]byte(newSignedKeyData))
 	if err == nil {
 		updateCertMetrics(certInfo)
 	}
 
 	log.Info().Msg("Writing signed cert")
-	err = signedKey.Write(signedData)
+	err = signedKey.Write(newSignedKeyData)
 	if err != nil {
-		return fmt.Errorf("could not write signed public key to pod: %v", err)
+		return fmt.Errorf("can't write signed cert: %v", err)
 	}
-
 	return nil
 }
 
