@@ -54,6 +54,10 @@ func (c *Config) Validate() []error {
 		errs = append(errs, fmt.Errorf("both '%s' and '%s' auth info provided, don't know what to pick", FLAG_VAULT_SECRET_ID, FLAG_VAULT_SECRET_ID_FILE))
 	}
 
+	if len(c.VaultAddress) == 0 {
+		errs = append(errs, fmt.Errorf("empty '%s' provided", FLAG_VAULT_ADDRESS))
+	}
+
 	if len(c.VaultMountApprole) == 0 {
 		errs = append(errs, fmt.Errorf("empty '%s' provided", FLAG_VAULT_MOUNT_APPROLE))
 	}
@@ -101,7 +105,7 @@ func (c *Config) PrintConfig() {
 func NewConfigFromViper() Config {
 	conf := Config{}
 
-	conf.VaultAddress = viper.GetViper().GetString(FLAG_VAULT_ADDRESS)
+	conf.VaultAddress = viperOrEnv(FLAG_VAULT_ADDRESS, "VAULT_ADDR")
 	conf.VaultToken = viper.GetViper().GetString(FLAG_VAULT_TOKEN)
 	conf.VaultRoleId = viper.GetViper().GetString(FLAG_VAULT_ROLE_ID)
 	conf.VaultSecretId = viper.GetViper().GetString(FLAG_VAULT_SECRET_ID)
@@ -116,4 +120,12 @@ func NewConfigFromViper() Config {
 	conf.MetricsFile = viper.GetViper().GetString(FLAG_METRICS_FILE)
 
 	return conf
+}
+
+func viperOrEnv(viperKey, envKey string) string {
+	val := viper.GetViper().GetString(viperKey)
+	if len(val) == 0 {
+		return os.Getenv(envKey)
+	}
+	return val
 }
