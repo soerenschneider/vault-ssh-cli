@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://www.github.com/soerenschneider/ssh-key-signer/compare/v1.0.0...v1.1.0) (2022-02-03)
+
+
+### Features
+
+* expose new metrics ([79eb199](https://www.github.com/soerenschneider/ssh-key-signer/commit/79eb19948bd3688a61e2f0f0a01e7993c98954bc))
+
 ## 1.0.0 (2022-02-02)
 
 
