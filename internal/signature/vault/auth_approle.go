@@ -7,6 +7,12 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
+const (
+	KeyRoleId       = "role_id"
+	KeySecretId     = "secret_id"
+	KeySecretIdFile = "secret_id_file"
+)
+
 type AppRoleAuth struct {
 	client *api.Client
 
@@ -25,17 +31,17 @@ func NewAppRoleAuth(client *api.Client, loginData map[string]string) (*AppRoleAu
 
 func (t *AppRoleAuth) getLoginTuple() (string, string, error) {
 	var roleId, secretId string
-	val, ok := t.loginData["role_id"]
+	val, ok := t.loginData[KeyRoleId]
 	if ok && len(val) > 0 {
 		roleId = val
 	}
 
-	val, ok = t.loginData["secret_id"]
+	val, ok = t.loginData[KeySecretId]
 	if ok && len(val) > 0 {
 		secretId = val
 	}
 
-	val, ok = t.loginData["secret_id_file"]
+	val, ok = t.loginData[KeySecretIdFile]
 	if ok && len(val) > 0 {
 		data, err := ioutil.ReadFile(val)
 		if err != nil {
@@ -55,8 +61,8 @@ func (t *AppRoleAuth) Authenticate() (string, error) {
 
 	path := fmt.Sprintf("auth/%s/login", t.approleMount)
 	data := map[string]interface{}{
-		"role_id":   roleId,
-		"secret_id": secretId,
+		KeyRoleId:   roleId,
+		KeySecretId: secretId,
 	}
 	secret, err := t.client.Logical().Write(path, data)
 	if err != nil {
