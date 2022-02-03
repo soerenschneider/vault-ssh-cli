@@ -26,7 +26,13 @@ var (
 		Help:      "The date after the cert is not valid anymore",
 	})
 
-	MetricCertLifetime = promauto.NewGauge(prometheus.GaugeOpts{
+	MetricCertLifetimeTotal = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: namespace,
+		Name:      "cert_lifetime_seconds_total",
+		Help:      "The total number of seconds this certificate is valid",
+	})
+
+	MetricCertLifetimePercent = promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: namespace,
 		Name:      "cert_lifetime_percent",
 		Help:      "The passed lifetime of the certificate in percent",

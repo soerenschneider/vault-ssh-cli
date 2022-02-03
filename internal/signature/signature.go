@@ -79,5 +79,6 @@ func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
 
 func updateCertMetrics(certInfo ssh.CertInfo) {
 	internal.MetricCertExpiry.Set(float64(certInfo.ValidBefore.Unix()))
-	internal.MetricCertLifetime.Set(float64(certInfo.GetPercentage()))
+	internal.MetricCertLifetimePercent.Set(float64(certInfo.GetPercentage()))
+	internal.MetricCertLifetimeTotal.Set(certInfo.ValidBefore.Sub(certInfo.ValidAfter).Seconds())
 }
