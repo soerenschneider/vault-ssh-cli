@@ -16,7 +16,9 @@ type Signer interface {
 // the implementation (file-based, memory, network, ..) and make it easily swap- and testable.
 type KeyPod interface {
 	Read() ([]byte, error)
+	CanRead() error
 	Write(string) error
+	CanWrite() error
 }
 
 type Issuer struct {
@@ -29,7 +31,10 @@ func NewIssuer(signer Signer, refresh ssh.RefreshSignatureStrategy) (*Issuer, er
 }
 
 func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
-	pubKeyData, err := signedKey.Read()
+	err := signedKey.CanWrite()
+	if err != nil {
+		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)
+	}
 	if err == nil {
 		// on the first run the signed key data is not available, yet
 		certInfo, err := ssh.ParseCertData(pubKeyData)
