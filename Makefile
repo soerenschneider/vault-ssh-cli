@@ -21,7 +21,7 @@ release: clean version-info cross-build
 	cd $(BUILD_DIR) && sha256sum * > $(CHECKSUM_FILE) && cd -
 
 signed-release: release
-	pass keys/signify/github | signify -S -s $(SIGNATURE_KEYFILE) -m $(CHECKSUM_FILE)
+	pass keys/signify/github | signify -S -s $(SIGNATURE_KEYFILE) -m $(BUILD_DIR)/$(CHECKSUM_FILE)
 	gh-upload-assets -o soerenschneider -r acmevault -f ~/.gh-token builds
 
 cross-build:
