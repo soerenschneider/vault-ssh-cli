@@ -40,6 +40,7 @@ const (
 
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
 
 	root := &cobra.Command{
 		Use: "boing",
