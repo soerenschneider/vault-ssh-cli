@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://www.github.com/soerenschneider/ssh-key-signer/compare/v1.1.0...v1.2.0) (2022-02-08)
+
+
+### Features
+
+* add version info, log on startup ([ce23d40](https://www.github.com/soerenschneider/ssh-key-signer/commit/ce23d40fb5ed7de5a2637718ff16030f69aab4c7))
+* split functionality into commands ([1dbdbde](https://www.github.com/soerenschneider/ssh-key-signer/commit/1dbdbde75b1fa88b44ad9f61d0dc93c7e98433e5))
+
 ## [1.1.0](https://www.github.com/soerenschneider/ssh-key-signer/compare/v1.0.0...v1.1.0) (2022-02-03)
 
 
