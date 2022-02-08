@@ -43,8 +43,8 @@ func main() {
 
 	root := &cobra.Command{Use: "ssh-key-signer", Short: fmt.Sprintf("Sign SSH keys - %s", internal.BuildVersion)}
 
-	root.AddCommand(getSignCmd())
-	root.AddCommand(versionCommand)
+	root.AddCommand(getSignHostKeyCmd())
+	root.AddCommand(versionCmd)
 
 	if err := root.Execute(); err != nil {
 		fmt.Println(err)

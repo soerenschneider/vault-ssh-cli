@@ -17,47 +17,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func bla(ccmd *cobra.Command, args []string) {
-	log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
-	configFile := viper.GetViper().GetString(FLAG_CONFIG_FILE)
-	if len(configFile) > 0 {
-		err := readConfig(configFile)
-		if err != nil {
-			log.Fatal().Msgf("Could not load desired config file: %s: %v", configFile, err)
-		}
-		log.Info().Msgf("Read config from file %s", viper.ConfigFileUsed())
-	}
-
-	config := NewConfigFromViper()
-	config.PrintConfig()
-
-	err := signPublicKey(config)
-	if err != nil {
-		log.Error().Msgf("signing key not successful, %v", err)
-		internal.MetricSuccess.Set(0)
-	} else {
-		internal.MetricSuccess.Set(1)
-	}
-	internal.MetricRunTimestamp.SetToCurrentTime()
-	if len(config.MetricsFile) > 0 {
-		internal.WriteMetrics(config.MetricsFile)
-	}
-
-	if err == nil {
-		os.Exit(0)
-	}
-	os.Exit(1)
-}
-
-func getSignCmd() *cobra.Command {
-
+func getSignHostKeyCmd() *cobra.Command {
 	var signCmd = &cobra.Command{
 		Use:   "sign-host-key",
 		Short: "Sign a SSH host public key",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			return initializeConfig(cmd)
 		},
-		Run: bla,
+		Run: signHostKeyEntryPoint,
 	}
 
 	signCmd.PersistentFlags().BoolP("debug", "v", false, "Enable debug logging")
@@ -110,7 +77,39 @@ func getSignCmd() *cobra.Command {
 	return signCmd
 }
 
-func signPublicKey(config Config) error {
+func signHostKeyEntryPoint(ccmd *cobra.Command, args []string) {
+	log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
+	configFile := viper.GetViper().GetString(FLAG_CONFIG_FILE)
+	if len(configFile) > 0 {
+		err := readConfig(configFile)
+		if err != nil {
+			log.Fatal().Msgf("Could not load desired config file: %s: %v", configFile, err)
+		}
+		log.Info().Msgf("Read config from file %s", viper.ConfigFileUsed())
+	}
+
+	config := NewConfigFromViper()
+	config.PrintConfig()
+
+	err := signHostKey(config)
+	if err != nil {
+		log.Error().Msgf("signing key not successful, %v", err)
+		internal.MetricSuccess.Set(0)
+	} else {
+		internal.MetricSuccess.Set(1)
+	}
+	internal.MetricRunTimestamp.SetToCurrentTime()
+	if len(config.MetricsFile) > 0 {
+		internal.WriteMetrics(config.MetricsFile)
+	}
+
+	if err == nil {
+		os.Exit(0)
+	}
+	os.Exit(1)
+}
+
+func signHostKey(config Config) error {
 	errors := config.Validate()
 	if len(errors) > 0 {
 		fmtErrors := make([]string, len(errors))
