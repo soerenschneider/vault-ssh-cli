@@ -52,6 +52,7 @@ Configuration is supported via CLI arguments, ENV variables and through yaml-enc
 | vault-mount-approle  | Path where the AppRole auth method is mounted.                                                | "approle" |
 | vault-ssh-role-name  | The name of the SSH role auth backend.                                                        | "host_key_sign" |
 
+### sign-host-key subcommand
 | Name                 | Description                                                                                   | Default   |
 |----------------------|-----------------------------------------------------------------------------------------------|-----------|
 | signed-key-file      | File to write the signed key to                                                               |           |
@@ -60,6 +61,19 @@ Configuration is supported via CLI arguments, ENV variables and through yaml-enc
 | lifetime-threshold-percent | If there's already a signed certificate at `signed-key-file`, only sign public key again if its lifetime period is less than the given threshold.                                                              | 33        |
 | force-new-signature  | Sign public key regardless of it's validity period                                            | false     |
 | config-file          | File to read configuration from
+
+#### Example
+
+```bash
+# Sign this machine's host key (/etc/ssh/ssh_host_ed25519_key.pub) and write the received certificate to /etc/ssh/host_certificate.pub using the
+# identity "my-role-id" and the secret-id from file /secret-id
+ssh-key-signer sign-host-key \
+     -a https://my-vault:8200 \
+     --vault-role-id=my-role-id \
+     --vault-secret-id-file=/secret-id \ 
+     --pub-key-file=/etc/ssh/ssh_host_ed25519_key.pub \
+     --signed-key-file=/etc/ssh/host_certificate.pub
+```
 
 ### Configuration via ENV variables
 All configuration variables must be prefixed with `SSH_KEY_SIGNER`.
