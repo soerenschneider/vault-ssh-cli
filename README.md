@@ -13,11 +13,31 @@ Sign SSH (host) keys using Hashicorp Vault
 
 ❌ Sign SSH client public keys
 
-## Running it
+## Installation
 
-Configuration is supported via CLI arguments, ENV variables and through yaml-encoded config files. 
+### Pre-compiled Binaries
+
+Pre-compiled binaries can be found at the releases section. They are signed using a cryptographic signature made by [signify](https://man.openbsd.org/signify.1) using the following public key: 
+```
+untrusted comment: signify public key
+RWSFxNuvQMx07H1IC6sUxJvlsdtfDlY39EdoHMG/ZpivtOmp8sJ3DMEg
+```
+
+To verify the cryptographic signature, run
+```bash
+$ signify -V -p /path/to/downloaded/pubkey -m checksum.sha256
+$ sha256sum -c checksum.sha256
+```
+
+### Building it from source
+
+```sh
+$ git clone https://github.com/soerenschneider/ssh-key-signer
+$ make build -C ssh-key-signer
+```
 
 ## Configuration
+Configuration is supported via CLI arguments, ENV variables and through yaml-encoded config files.
 
 ### Configuration Options
 
@@ -81,9 +101,3 @@ https://man.openbsd.org/sshd_config#HostCertificate
 
 ### Configuring OpenSSH Client
 https://www.vaultproject.io/docs/secrets/ssh/signed-ssh-certificates#client-side-host-verification
-
-## Building it from source
-
-```sh
-$ make build
-```
