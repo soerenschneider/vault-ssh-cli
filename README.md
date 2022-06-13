@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/soerenschneider/ssh-key-signer)](https://goreportcard.com/report/github.com/soerenschneider/ssh-key-signer)
 
 # ssh-key-signer
 
