@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/hashicorp/vault/api v1.7.2
 	github.com/prometheus/client_golang v1.12.2
-	github.com/prometheus/common v0.35.0
+	github.com/prometheus/common v0.36.0
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.12.0
