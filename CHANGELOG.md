@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/soerenschneider/ssh-key-signer/compare/v1.2.0...v1.2.1) (2023-01-06)
+
+
+### Bug Fixes
+
+* do not write 'go_' prefixed metrics to file ([d270167](https://github.com/soerenschneider/ssh-key-signer/commit/d27016788bbb1028f2f86aaa5273179846efd5bc))
+
 ## [1.2.0](https://www.github.com/soerenschneider/ssh-key-signer/compare/v1.1.0...v1.2.0) (2022-02-08)
 
 
