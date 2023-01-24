@@ -10,7 +10,8 @@ import (
 )
 
 type BufferPod struct {
-	Data []byte
+	Data  []byte
+	Print bool
 }
 
 func (b *BufferPod) Read() ([]byte, error) {
@@ -29,6 +30,9 @@ func (b *BufferPod) CanRead() error {
 
 func (b *BufferPod) Write(signedData string) error {
 	b.Data = []byte(signedData)
+	if b.Print {
+		fmt.Println(signedData)
+	}
 	return nil
 }
 
