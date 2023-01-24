@@ -6,6 +6,7 @@ import (
 	"github.com/soerenschneider/ssh-key-signer/internal/signature"
 	"github.com/soerenschneider/ssh-key-signer/internal/signature/vault"
 	"github.com/soerenschneider/ssh-key-signer/pkg/ssh"
+	"github.com/spf13/viper"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -29,6 +30,8 @@ func getSignHostKeyCmd() *cobra.Command {
 	signCmd.PersistentFlags().Float32(FLAG_LIFETIME_THRESHOLD_PERCENTAGE, FLAG_LIFETIME_THRESHOLD_PERCENTAGE_DEFAULT, "Sign key after passing lifetime threshold (in %)")
 	signCmd.PersistentFlags().String(FLAG_METRICS_FILE, FLAG_METRICS_FILE_DEFAULT, "File to write metrics to")
 
+	viper.SetDefault(FLAG_LIFETIME_THRESHOLD_PERCENTAGE, FLAG_LIFETIME_THRESHOLD_PERCENTAGE_DEFAULT)
+
 	return signCmd
 }
 
@@ -38,7 +41,7 @@ func signHostKeyEntryPoint(ccmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not read config")
 	}
-
+	config.Print()
 	err = signHostKey(config)
 	if err != nil {
 		log.Error().Msgf("signing key not successful, %v", err)
