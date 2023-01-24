@@ -8,8 +8,8 @@ require (
 	github.com/prometheus/common v0.39.0
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cobra v1.6.1
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.14.0
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
-	golang.org/x/sys v0.3.0
+	golang.org/x/sys v0.4.0
 )
