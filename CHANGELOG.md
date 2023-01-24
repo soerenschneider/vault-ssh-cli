@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/soerenschneider/ssh-key-signer/compare/v1.3.0...v1.3.1) (2023-01-24)
+
+
+### Miscellaneous Chores
+
+* release 1.3.3 ([6c234cb](https://github.com/soerenschneider/ssh-key-signer/commit/6c234cb41f0a0ff98a1b44033a9785612473b6d3))
+
 ## [1.3.0](https://github.com/soerenschneider/ssh-key-signer/compare/v1.2.1...v1.3.0) (2023-01-24)
 
 
