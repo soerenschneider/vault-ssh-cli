@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/soerenschneider/ssh-key-signer/compare/v1.2.1...v1.3.0) (2023-01-24)
+
+
+### Features
+
+* Add subcmd for reading ca ([#33](https://github.com/soerenschneider/ssh-key-signer/issues/33)) ([8a1caa2](https://github.com/soerenschneider/ssh-key-signer/commit/8a1caa2fa1def937b21ce7fba982733ab3d6218b))
+
 ## [1.2.1](https://github.com/soerenschneider/ssh-key-signer/compare/v1.2.0...v1.2.1) (2023-01-06)
 
 
