@@ -19,9 +19,17 @@ func (s *HappySignerDummy) SignPublicKey(publicKeyData string) (string, error) {
 	return signedDataContent, nil
 }
 
+func (s *HappySignerDummy) ReadCaCert() (string, error) {
+	return "", nil
+}
+
 type SadSignerDummy struct{}
 
 func (s *SadSignerDummy) SignPublicKey(publicKeyData string) (string, error) {
+	return "", fmt.Errorf("sad sad sad")
+}
+
+func (s *SadSignerDummy) ReadCaCert() (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
@@ -48,7 +56,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{[]byte(randomSshPublicKey)},
+				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferPod{},
 			},
 			wantErr:           false,
@@ -61,8 +69,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{[]byte(randomSshPublicKey)},
-				signedKey: &BufferPod{[]byte(signedData)},
+				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferPod{Data: []byte(signedData)},
 			},
 			wantErr:           false,
 			wantSignatureData: signedDataContent,
@@ -74,8 +82,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(false),
 			},
 			args: args{
-				pubKey:    &BufferPod{[]byte(randomSshPublicKey)},
-				signedKey: &BufferPod{[]byte(signedData)},
+				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferPod{Data: []byte(signedData)},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -87,7 +95,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{[]byte(randomSshPublicKey)},
+				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferPod{},
 			},
 			wantErr:           true,
@@ -100,8 +108,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{[]byte(randomSshPublicKey)},
-				signedKey: &BufferPod{[]byte("garbage data, no ssh cert")},
+				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferPod{Data: []byte("garbage data, no ssh cert")},
 			},
 			wantErr:           true,
 			wantSignatureData: "garbage data, no ssh cert",
