@@ -13,16 +13,18 @@ import (
 	"github.com/spf13/viper"
 )
 
+var cliDescription = fmt.Sprintf("Sign SSH keys - %s", internal.BuildVersion)
+
 const (
-	name                  = "ssh-key-signer"
+	cliName               = "ssh-key-signer"
 	envPrefix             = "SSH_KEY_SIGNER"
 	defaultConfigFilename = "config"
 
 	FLAG_VAULT_ADDRESS                     = "vault-address"
 	FLAG_VAULT_AUTH_TOKEN                  = "vault-auth-token"
-	FLAG_VAULT_AUTH_APPROLE_ROLE_ID        = "vault-auth-role-id"
-	FLAG_VAULT_AUTH_APPROLE_SECRET_ID      = "vault-auth-secret-id"
-	FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE = "vault-auth-secret-id-file"
+	FLAG_VAULT_AUTH_APPROLE_ROLE_ID        = "vault-auth-approle-role-id"
+	FLAG_VAULT_AUTH_APPROLE_SECRET_ID      = "vault-auth-approle-secret-id"
+	FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE = "vault-auth-approle-secret-id-file"
 	FLAG_VAULT_AUTH_APPROLE_MOUNT          = "vault-auth-approle-mount"
 	FLAG_VAULT_AUTH_APPROLE_MOUNT_DEFAULT  = "approle"
 	FLAG_VAULT_AUTH_IMPLICIT               = "vault-auth-implicit"
@@ -31,10 +33,10 @@ const (
 
 	FLAG_VAULT_SSH_BACKEND_ROLE = "vault-ssh-role-name"
 
-	FLAG_FORCE_NEW_SIGNATURE                   = "force-new-signature"
-	FLAG_FORCE_NEW_SIGNATURE_DEFAULT           = false
-	FLAG_LIFETIME_THRESHOLD_PERCENTAGE         = "lifetime-threshold-percent"
-	FLAG_LIFETIME_THRESHOLD_PERCENTAGE_DEFAULT = 33.
+	FLAG_FORCE_NEW_SIGNATURE                = "force-new-signature"
+	FLAG_FORCE_NEW_SIGNATURE_DEFAULT        = false
+	FLAG_RENEW_THRESHOLD_PERCENTAGE         = "renew-threshold-percent"
+	FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT = 33.
 
 	FLAG_CA_FILE         = "ca-file"
 	FLAG_PUBKEY_FILE     = "pub-key-file"
@@ -49,19 +51,16 @@ func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	root := &cobra.Command{
-		Use:   name,
-		Short: fmt.Sprintf("Sign SSH keys - %s", internal.BuildVersion),
+		Use:   cliName,
+		Short: cliDescription,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 
 			var errs []error
 			cmd.Flags().Visit(func(flag *pflag.Flag) {
-
 				err := viper.BindPFlag(flag.Name, cmd.Flags().Lookup(flag.Name))
 				if err != nil {
 					errs = append(errs, err)
 				}
-				log.Info().Msgf("%s=%v", flag.Name, flag.Value)
-
 			})
 			if len(errs) > 0 {
 				return fmt.Errorf("can't bind flags: %v", errs)
@@ -85,7 +84,7 @@ func main() {
 	root.AddCommand(versionCmd)
 
 	if err := root.Execute(); err != nil {
-		log.Fatal().Err(err).Msgf("could not run %s", name)
+		log.Fatal().Err(err).Msgf("could not run %s", cliName)
 	}
 }
 

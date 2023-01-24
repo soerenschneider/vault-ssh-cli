@@ -88,7 +88,7 @@ func (c *Config) Validate() []error {
 	}
 
 	if c.CertificateLifetimeThresholdPercentage < 5 || c.CertificateLifetimeThresholdPercentage > 90 {
-		errs = append(errs, fmt.Errorf("'%s' must be [5, 90]", FLAG_LIFETIME_THRESHOLD_PERCENTAGE))
+		errs = append(errs, fmt.Errorf("'%s' must be [5, 90]", FLAG_RENEW_THRESHOLD_PERCENTAGE))
 	}
 
 	return errs

@@ -27,10 +27,10 @@ func getSignHostKeyCmd() *cobra.Command {
 	signCmd.PersistentFlags().String(FLAG_VAULT_SSH_BACKEND_ROLE, "", "Write the ca certificate to this output file")
 	signCmd.PersistentFlags().Bool(FLAG_FORCE_NEW_SIGNATURE, FLAG_FORCE_NEW_SIGNATURE_DEFAULT, "Force signing a public key")
 	signCmd.PersistentFlags().String(FLAG_PUBKEY_FILE, "", "Force signing a public key")
-	signCmd.PersistentFlags().Float32(FLAG_LIFETIME_THRESHOLD_PERCENTAGE, FLAG_LIFETIME_THRESHOLD_PERCENTAGE_DEFAULT, "Sign key after passing lifetime threshold (in %)")
+	signCmd.PersistentFlags().Float32(FLAG_RENEW_THRESHOLD_PERCENTAGE, FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT, "Sign key after passing lifetime threshold (in %)")
 	signCmd.PersistentFlags().String(FLAG_METRICS_FILE, FLAG_METRICS_FILE_DEFAULT, "File to write metrics to")
 
-	viper.SetDefault(FLAG_LIFETIME_THRESHOLD_PERCENTAGE, FLAG_LIFETIME_THRESHOLD_PERCENTAGE_DEFAULT)
+	viper.SetDefault(FLAG_RENEW_THRESHOLD_PERCENTAGE, FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT)
 
 	return signCmd
 }
