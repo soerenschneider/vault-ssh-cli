@@ -31,6 +31,7 @@ func getSignHostKeyCmd() *cobra.Command {
 	signCmd.PersistentFlags().String(FLAG_METRICS_FILE, FLAG_METRICS_FILE_DEFAULT, "File to write metrics to")
 
 	viper.SetDefault(FLAG_RENEW_THRESHOLD_PERCENTAGE, FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT)
+	viper.SetDefault(FLAG_METRICS_FILE, FLAG_METRICS_FILE_DEFAULT)
 
 	return signCmd
 }

@@ -32,7 +32,7 @@ type Config struct {
 
 	CaFile string `mapstructure:"ca-file"`
 
-	MetricsFile string
+	MetricsFile string `mapstructure:"metrics-file"`
 }
 
 func (c *Config) Validate() []error {
