@@ -1,2 +1,8 @@
+/.idea
 /builds
 /ssh-key-signer
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*

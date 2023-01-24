@@ -3,6 +3,7 @@ package vault
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/hashicorp/vault/api"
 	log "github.com/rs/zerolog/log"
@@ -35,6 +36,21 @@ func NewVaultSigner(client *api.Client, auth AuthMethod, backendName string) (*S
 		pathSsh: "ssh",
 		backend: backendName,
 	}, nil
+}
+
+func (c *SignatureClient) ReadCaCert() (string, error) {
+	path := fmt.Sprintf("%s/public_key", c.pathSsh)
+	resp, err := c.client.Logical().ReadRaw(path)
+	if err != nil {
+		return "", fmt.Errorf("reading cert failed: %v", err)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("could not read body from response: %v", err)
+	}
+
+	return string(data), nil
 }
 
 func (c *SignatureClient) signPublicKey(backend string, publicKeyData string) (string, error) {

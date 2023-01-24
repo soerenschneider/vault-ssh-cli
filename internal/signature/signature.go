@@ -10,6 +10,7 @@ import (
 
 type Signer interface {
 	SignPublicKey(publicKeyData string) (string, error)
+	ReadCaCert() (string, error)
 }
 
 // KeyPod is a simple wrapper around a key (which is just a byte stream itself). This way, we decouple
