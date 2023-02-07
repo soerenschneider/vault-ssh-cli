@@ -39,7 +39,7 @@ func readCaCertEntrypoint(ccmd *cobra.Command, args []string) {
 }
 
 func readCaCert(config *Config) error {
-	errors := config.Validate()
+	errors := config.ValidateCommon()
 	if len(errors) > 0 {
 		fmtErrors := make([]string, len(errors))
 		for i, er := range errors {
@@ -54,7 +54,7 @@ func readCaCert(config *Config) error {
 	}
 
 	authImpl := vault.NewNoAuth()
-	signingImpl, err := vault.NewVaultSigner(vaultClient, authImpl, config.VaultSshBackend)
+	signingImpl, err := vault.NewVaultSigner(vaultClient, authImpl, config.VaultMountSsh, config.VaultSshRole)
 	if err != nil {
 		return fmt.Errorf("could not build vault impl: %v", err)
 	}

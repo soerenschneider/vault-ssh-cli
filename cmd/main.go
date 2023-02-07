@@ -30,8 +30,7 @@ const (
 	FLAG_VAULT_AUTH_IMPLICIT               = "vault-auth-implicit"
 	FLAG_VAULT_SSH_MOUNT                   = "vault-ssh-mount"
 	FLAG_VAULT_SSH_MOUNT_DEFAULT           = "ssh"
-
-	FLAG_VAULT_SSH_BACKEND_ROLE = "vault-ssh-role-name"
+	FLAG_VAULT_SSH_ROLE                    = "vault-ssh-role"
 
 	FLAG_FORCE_NEW_SIGNATURE                = "force-new-signature"
 	FLAG_FORCE_NEW_SIGNATURE_DEFAULT        = false
@@ -71,16 +70,17 @@ func main() {
 
 	root.PersistentFlags().StringP(FLAG_VAULT_ADDRESS, "a", "", "Vault instance to connect to. If not specified, falls back to env var VAULT_ADDR.")
 	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_TOKEN, "t", "", "Vault token to use for authentication. Can not be used in conjunction with AppRole login data.")
-	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_IMPLICIT, "i", "", "Try to implicitly authenticate to vault using VAULT_TOKEN env var or ~/.vault-token file.")
+	root.PersistentFlags().BoolP(FLAG_VAULT_AUTH_IMPLICIT, "i", false, "Try to implicitly authenticate to vault using VAULT_TOKEN env var or ~/.vault-token file.")
 	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_APPROLE_ROLE_ID, "r", "", "Vault role_id to use for AppRole login. Can not be used in conjuction with Vault token flag.")
 	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_APPROLE_SECRET_ID, "", "", "Vault secret_id to use for AppRole login. Can not be used in conjuction with Vault token flag.")
-	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE, "s", "", "Flat file to read Vault secret_id from. Can not be used in conjuction with Vault token flag.")
+	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE, ".", "", "Flat file to read Vault secret_id from. Can not be used in conjuction with Vault token flag.")
 	root.PersistentFlags().StringP(FLAG_VAULT_AUTH_APPROLE_MOUNT, "", FLAG_VAULT_AUTH_APPROLE_MOUNT_DEFAULT, "Path where the AppRole auth method is mounted.")
-	root.PersistentFlags().StringP(FLAG_VAULT_SSH_MOUNT, "", FLAG_VAULT_SSH_MOUNT_DEFAULT, "Path where the PKI secret engine is mounted.")
-	root.PersistentFlags().StringP(FLAG_CONFIG_FILE, "", "", "File to read the config from")
+	root.PersistentFlags().StringP(FLAG_VAULT_SSH_MOUNT, "m", FLAG_VAULT_SSH_MOUNT_DEFAULT, "Path where the PKI secret engine is mounted.")
+	root.PersistentFlags().StringP(FLAG_CONFIG_FILE, "c", "", "File to read the config from")
 
 	root.AddCommand(readCaCertCmd())
 	root.AddCommand(getSignHostKeyCmd())
+	root.AddCommand(getSignUserKeyCmd())
 	root.AddCommand(versionCmd)
 
 	if err := root.Execute(); err != nil {

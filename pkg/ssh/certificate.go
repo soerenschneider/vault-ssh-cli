@@ -2,7 +2,8 @@ package ssh
 
 import (
 	"fmt"
-	"io/ioutil"
+	"math"
+	"os"
 	"time"
 
 	"golang.org/x/crypto/ssh"
@@ -18,11 +19,11 @@ type CertInfo struct {
 func (l *CertInfo) GetPercentage() float32 {
 	total := l.ValidBefore.Sub(l.ValidAfter).Seconds()
 	if total == 0 {
-		return 0
+		return 0.
 	}
 
 	left := time.Until(l.ValidBefore).Seconds()
-	return float32(left * 100 / total)
+	return float32(math.Max(0, left*100/total))
 }
 
 func ParseCertData(pubKeyBytes []byte) (CertInfo, error) {
@@ -45,7 +46,7 @@ func ParseCertData(pubKeyBytes []byte) (CertInfo, error) {
 }
 
 func ReadCertFromDisk(publicKeyFile string) (CertInfo, error) {
-	bytes, err := ioutil.ReadFile(publicKeyFile)
+	bytes, err := os.ReadFile(publicKeyFile)
 	if err != nil {
 		return CertInfo{}, fmt.Errorf("reading cert failed, can not read file: %v", err)
 	}

@@ -15,7 +15,11 @@ const (
 
 type HappySignerDummy struct{}
 
-func (s *HappySignerDummy) SignPublicKey(publicKeyData string) (string, error) {
+func (s *HappySignerDummy) SignHostKey(publicKeyData string) (string, error) {
+	return signedDataContent, nil
+}
+
+func (s *HappySignerDummy) SignUserKey(publicKeyData string) (string, error) {
 	return signedDataContent, nil
 }
 
@@ -25,7 +29,11 @@ func (s *HappySignerDummy) ReadCaCert() (string, error) {
 
 type SadSignerDummy struct{}
 
-func (s *SadSignerDummy) SignPublicKey(publicKeyData string) (string, error) {
+func (s *SadSignerDummy) SignHostKey(publicKeyData string) (string, error) {
+	return "", fmt.Errorf("sad sad sad")
+}
+
+func (s *SadSignerDummy) SignUserKey(publicKeyData string) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 

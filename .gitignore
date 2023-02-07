@@ -2,6 +2,7 @@
 /builds
 /ssh-key-signer
 **/.terraform/*
+/coverage.*
 
 # .tfstate files
 *.tfstate

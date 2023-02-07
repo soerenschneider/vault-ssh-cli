@@ -14,11 +14,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func getSignHostKeyCmd() *cobra.Command {
+func getSignUserKeyCmd() *cobra.Command {
 	var signCmd = &cobra.Command{
-		Use:   "sign-host-key",
-		Short: "Sign a SSH host public key",
-		Run:   signHostKeyEntryPoint,
+		Use:   "sign-user-key",
+		Short: "Sign a SSH user public key",
+		Run:   signUserKeyEntryPoint,
 	}
 
 	signCmd.PersistentFlags().String(FLAG_VAULT_SSH_ROLE, "", "Write the ca certificate to this output file")
@@ -34,14 +34,14 @@ func getSignHostKeyCmd() *cobra.Command {
 	return signCmd
 }
 
-func signHostKeyEntryPoint(ccmd *cobra.Command, args []string) {
+func signUserKeyEntryPoint(ccmd *cobra.Command, args []string) {
 	log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
 	config, err := config()
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not read config")
 	}
 	config.Print()
-	err = signHostKey(config)
+	err = signUserKey(config)
 	if err != nil {
 		log.Error().Msgf("signing key not successful, %v", err)
 		internal.MetricSuccess.Set(0)
@@ -59,7 +59,7 @@ func signHostKeyEntryPoint(ccmd *cobra.Command, args []string) {
 	os.Exit(1)
 }
 
-func signHostKey(config *Config) error {
+func signUserKey(config *Config) error {
 	errors := config.ValidateSignCommand()
 	if len(errors) > 0 {
 		fmtErrors := make([]string, len(errors))
@@ -112,7 +112,7 @@ func signHostKey(config *Config) error {
 		return fmt.Errorf("could not build issuer: %v", err)
 	}
 
-	err = issuer.SignHostCert(pubKeyPod, signedKeyPod)
+	err = issuer.SignClientCert(pubKeyPod, signedKeyPod)
 	if err != nil {
 		return fmt.Errorf("could not sign public key: %v", err)
 	}
