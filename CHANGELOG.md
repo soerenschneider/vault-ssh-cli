@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/soerenschneider/ssh-key-signer/compare/v1.3.1...v1.4.0) (2023-02-09)
+
+
+### Features
+
+* sign user certs ([#38](https://github.com/soerenschneider/ssh-key-signer/issues/38)) ([2f06648](https://github.com/soerenschneider/ssh-key-signer/commit/2f066481eb34005a53cc5d5025529f4ad7149572))
+
 ## [1.3.1](https://github.com/soerenschneider/ssh-key-signer/compare/v1.3.0...v1.3.1) (2023-01-24)
 
 
