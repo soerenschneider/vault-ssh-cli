@@ -21,9 +21,9 @@ type Signer interface {
 	ReadCaCert() (string, error)
 }
 
-// KeyPod is a simple wrapper around a key (which is just a byte stream itself). This way, we decouple
+// Sink is a simple wrapper around a key (which is just a byte stream itself). This way, we decouple
 // the implementation (file-based, memory, network, ..) and make it easily swap- and testable.
-type KeyPod interface {
+type Sink interface {
 	Read() ([]byte, error)
 	CanRead() error
 	Write(string) error
@@ -39,15 +39,15 @@ func NewIssuer(signer Signer, refresh ssh.RefreshSignatureStrategy) (*Issuer, er
 	return &Issuer{signerImpl: signer, refreshImpl: refresh}, nil
 }
 
-func (i *Issuer) SignClientCert(pubKey, signedKey KeyPod) error {
+func (i *Issuer) SignClientCert(pubKey, signedKey Sink) error {
 	return i.signCert(pubKey, signedKey, User)
 }
 
-func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
+func (i *Issuer) SignHostCert(pubKey, signedKey Sink) error {
 	return i.signCert(pubKey, signedKey, Host)
 }
 
-func (i *Issuer) signCert(pubKey, signedKey KeyPod, certType CertType) error {
+func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 	err := signedKey.CanWrite()
 	if err != nil {
 		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)

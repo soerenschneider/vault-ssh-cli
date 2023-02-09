@@ -21,7 +21,7 @@ func getSignUserKeyCmd() *cobra.Command {
 		Run:   signUserKeyEntryPoint,
 	}
 
-	signCmd.PersistentFlags().String(FLAG_VAULT_SSH_ROLE, "", "Write the ca certificate to this output file")
+	signCmd.PersistentFlags().StringP(FLAG_VAULT_SSH_ROLE, "r", "", "The Vault role to use")
 	signCmd.PersistentFlags().Bool(FLAG_FORCE_NEW_SIGNATURE, FLAG_FORCE_NEW_SIGNATURE_DEFAULT, "Force signing a public key")
 	signCmd.PersistentFlags().StringP(FLAG_PUBKEY_FILE, "p", "", "Public key file to sign")
 	signCmd.PersistentFlags().StringP(FLAG_SIGNED_KEY_FILE, "s", "", "File to write signature to")
@@ -69,6 +69,7 @@ func signUserKey(config *Config) error {
 		return fmt.Errorf("invalid config, %d errors: %s", len(errors), strings.Join(fmtErrors, ", "))
 	}
 
+	config.PostValidation()
 	vaultClient, err := api.NewClient(getVaultConfig(config))
 	if err != nil {
 		return fmt.Errorf("could not build vault client: %v", err)
@@ -89,7 +90,7 @@ func signUserKey(config *Config) error {
 		return fmt.Errorf("could not build signature refresh stratey: %v", err)
 	}
 
-	pubKeyPod, err := buildPublicKeyPod(config)
+	pubKeyPod, err := buildPublicKeySink(config)
 	if err != nil {
 		return fmt.Errorf("can't build sink to read public key from: %v", err)
 	}
@@ -98,7 +99,7 @@ func signUserKey(config *Config) error {
 		return fmt.Errorf("can not read from public key %s: %v", config.PublicKeyFile, err)
 	}
 
-	signedKeyPod, err := buildSignedKeyPod(config)
+	signedKeyPod, err := buildSignedKeySink(config)
 	if err != nil {
 		return fmt.Errorf("can't build sink to write signature to: %v", err)
 	}

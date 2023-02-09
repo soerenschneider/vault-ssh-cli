@@ -59,7 +59,7 @@ func getExpandedFile(filename string) string {
 	return filename
 }
 
-func buildPublicKeyPod(config *Config) (signature.KeyPod, error) {
+func buildPublicKeySink(config *Config) (signature.Sink, error) {
 	if nil == config {
 		return nil, errors.New("empty config supplied")
 	}
@@ -68,10 +68,11 @@ func buildPublicKeyPod(config *Config) (signature.KeyPod, error) {
 		return nil, errors.New("no public key file supplied")
 	}
 
-	return &signature.FsPod{FilePath: config.PublicKeyFile}, nil
+	expanded := getExpandedFile(config.PublicKeyFile)
+	return &signature.FileSink{FilePath: expanded}, nil
 }
 
-func buildSignedKeyPod(config *Config) (signature.KeyPod, error) {
+func buildSignedKeySink(config *Config) (signature.Sink, error) {
 	if nil == config {
 		return nil, errors.New("empty config supplied")
 	}
@@ -80,5 +81,6 @@ func buildSignedKeyPod(config *Config) (signature.KeyPod, error) {
 		return nil, errors.New("no signed key file supplied")
 	}
 
-	return &signature.FsPod{FilePath: config.SignedKeyFile}, nil
+	expanded := getExpandedFile(config.SignedKeyFile)
+	return &signature.FileSink{FilePath: expanded}, nil
 }

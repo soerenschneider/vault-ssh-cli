@@ -3,10 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
+	log "github.com/rs/zerolog/log"
 	"os"
 	"reflect"
-
-	log "github.com/rs/zerolog/log"
+	"strings"
 )
 
 var sensitiveVars = map[string]struct{}{
@@ -37,6 +37,15 @@ type Config struct {
 	MetricsFile string `mapstructure:"metrics-file"`
 }
 
+func (c *Config) PostValidation() {
+	if len(c.SignedKeyFile) == 0 && len(c.PublicKeyFile) > 0 {
+		auto := strings.Replace(c.PublicKeyFile, ".pub", "", 1)
+		auto = getExpandedFile(fmt.Sprintf("%s-cert.pub", auto))
+		log.Info().Msgf("Automatically derived value for '%s' (%s) from supplied '%s' (%s)", FLAG_SIGNED_KEY_FILE, auto, FLAG_PUBKEY_FILE, c.PublicKeyFile)
+		c.SignedKeyFile = auto
+	}
+}
+
 func (c *Config) ValidateCommon() []error {
 	errs := make([]error, 0)
 
@@ -64,10 +73,6 @@ func (c *Config) ValidateSignCommand() []error {
 		if err != nil {
 			errs = append(errs, fmt.Errorf("couldn't access pub-key-file at '%s'", c.PublicKeyFile))
 		}
-	}
-
-	if len(c.SignedKeyFile) == 0 {
-		errs = append(errs, fmt.Errorf("empty '%s' provided", FLAG_SIGNED_KEY_FILE))
 	}
 
 	if len(c.VaultSshRole) == 0 {
