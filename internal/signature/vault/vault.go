@@ -16,11 +16,11 @@ type AuthMethod interface {
 type SignatureClient struct {
 	client  *api.Client
 	auth    AuthMethod
-	backend string
+	role    string
 	pathSsh string
 }
 
-func NewVaultSigner(client *api.Client, auth AuthMethod, backendName string) (*SignatureClient, error) {
+func NewVaultSigner(client *api.Client, auth AuthMethod, vaultMount, backendName string) (*SignatureClient, error) {
 	if client == nil {
 		return nil, errors.New("nil client passed")
 	}
@@ -29,12 +29,15 @@ func NewVaultSigner(client *api.Client, auth AuthMethod, backendName string) (*S
 		return nil, errors.New("nil auth passed")
 	}
 
+	if len(vaultMount) == 0 {
+		return nil, errors.New("empty vault mount passed")
+	}
+
 	return &SignatureClient{
-		client: client,
-		auth:   auth,
-		// TODO: make  configurable
-		pathSsh: "ssh",
-		backend: backendName,
+		client:  client,
+		auth:    auth,
+		pathSsh: vaultMount,
+		role:    backendName,
 	}, nil
 }
 
@@ -53,11 +56,11 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 	return string(data), nil
 }
 
-func (c *SignatureClient) signPublicKey(backend string, publicKeyData string) (string, error) {
-	path := fmt.Sprintf("%s/sign/%s", c.pathSsh, backend)
+func (c *SignatureClient) signPublicKey(role string, publicKeyData, certType string) (string, error) {
+	path := fmt.Sprintf("%s/sign/%s", c.pathSsh, role)
 	data := map[string]interface{}{
 		"public_key": publicKeyData,
-		"cert_type":  "host",
+		"cert_type":  certType,
 	}
 	secret, err := c.client.Logical().Write(path, data)
 	if err != nil {
@@ -68,7 +71,7 @@ func (c *SignatureClient) signPublicKey(backend string, publicKeyData string) (s
 	return signedData, nil
 }
 
-func (c *SignatureClient) SignPublicKey(publicKeyData string) (string, error) {
+func (c *SignatureClient) SignHostKey(publicKeyData string) (string, error) {
 	log.Info().Msg("Trying to authenticate against vault")
 	token, err := c.auth.Authenticate()
 	if err != nil {
@@ -76,6 +79,18 @@ func (c *SignatureClient) SignPublicKey(publicKeyData string) (string, error) {
 	}
 
 	c.client.SetToken(token)
-	log.Info().Msgf("Signing public key using backend %s", c.backend)
-	return c.signPublicKey(c.backend, publicKeyData)
+	log.Info().Msgf("Signing public key using role '%s'", c.role)
+	return c.signPublicKey(c.role, publicKeyData, "host")
+}
+
+func (c *SignatureClient) SignUserKey(publicKeyData string) (string, error) {
+	log.Info().Msg("Trying to authenticate against vault")
+	token, err := c.auth.Authenticate()
+	if err != nil {
+		return "", fmt.Errorf("could not authenticate: %v", err)
+	}
+
+	c.client.SetToken(token)
+	log.Info().Msgf("Signing public key using role '%s'", c.role)
+	return c.signPublicKey(c.role, publicKeyData, "user")
 }

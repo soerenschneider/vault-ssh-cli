@@ -15,7 +15,11 @@ const (
 
 type HappySignerDummy struct{}
 
-func (s *HappySignerDummy) SignPublicKey(publicKeyData string) (string, error) {
+func (s *HappySignerDummy) SignHostKey(publicKeyData string) (string, error) {
+	return signedDataContent, nil
+}
+
+func (s *HappySignerDummy) SignUserKey(publicKeyData string) (string, error) {
 	return signedDataContent, nil
 }
 
@@ -25,7 +29,11 @@ func (s *HappySignerDummy) ReadCaCert() (string, error) {
 
 type SadSignerDummy struct{}
 
-func (s *SadSignerDummy) SignPublicKey(publicKeyData string) (string, error) {
+func (s *SadSignerDummy) SignHostKey(publicKeyData string) (string, error) {
+	return "", fmt.Errorf("sad sad sad")
+}
+
+func (s *SadSignerDummy) SignUserKey(publicKeyData string) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
@@ -39,8 +47,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 		refreshImpl ssh.RefreshSignatureStrategy
 	}
 	type args struct {
-		pubKey    KeyPod
-		signedKey KeyPod
+		pubKey    Sink
+		signedKey Sink
 	}
 	tests := []struct {
 		name              string
@@ -56,8 +64,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferPod{},
+				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferSink{},
 			},
 			wantErr:           false,
 			wantSignatureData: signedDataContent,
@@ -69,8 +77,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferPod{Data: []byte(signedData)},
+				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferSink{Data: []byte(signedData)},
 			},
 			wantErr:           false,
 			wantSignatureData: signedDataContent,
@@ -82,8 +90,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(false),
 			},
 			args: args{
-				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferPod{Data: []byte(signedData)},
+				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferSink{Data: []byte(signedData)},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -95,8 +103,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferPod{},
+				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferSink{},
 			},
 			wantErr:           true,
 			wantSignatureData: "",
@@ -108,8 +116,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				refreshImpl: ssh.NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferPod{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferPod{Data: []byte("garbage data, no ssh cert")},
+				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &BufferSink{Data: []byte("garbage data, no ssh cert")},
 			},
 			wantErr:           true,
 			wantSignatureData: "garbage data, no ssh cert",

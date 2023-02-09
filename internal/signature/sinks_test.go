@@ -27,16 +27,16 @@ func TestFsPod_Read(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fs := &FsPod{
+			fs := &FileSink{
 				FilePath: tt.filePath,
 			}
 			got, err := fs.Read()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("FsPod.Read() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("FileSink.Read() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FsPod.Read() = %v, want %v", got, tt.want)
+				t.Errorf("FileSink.Read() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -61,11 +61,11 @@ func TestFsPod_CanRead(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fs := &FsPod{
+			fs := &FileSink{
 				FilePath: tt.filePath,
 			}
 			if err := fs.CanRead(); (err != nil) != tt.wantErr {
-				t.Errorf("FsPod.CanRead() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("FileSink.CanRead() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

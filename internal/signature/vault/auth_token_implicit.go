@@ -38,7 +38,9 @@ func (t *TokenImplicitAuth) Authenticate() (string, error) {
 	}
 
 	read, err := os.ReadFile(tokenPath)
-	return "", fmt.Errorf("error reading file '%s': %v", tokenFile, err)
+	if err != nil {
+		return "", fmt.Errorf("error reading file '%s': %v", tokenFile, err)
+	}
 
 	log.Info().Msgf("Using vault token from file '%s'", tokenFile)
 	return string(read), nil

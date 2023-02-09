@@ -8,14 +8,22 @@ import (
 	log "github.com/rs/zerolog/log"
 )
 
+type CertType int
+
+const (
+	User CertType = 1 << iota
+	Host CertType = 1 << iota
+)
+
 type Signer interface {
-	SignPublicKey(publicKeyData string) (string, error)
+	SignHostKey(publicKeyData string) (string, error)
+	SignUserKey(publicKeyData string) (string, error)
 	ReadCaCert() (string, error)
 }
 
-// KeyPod is a simple wrapper around a key (which is just a byte stream itself). This way, we decouple
+// Sink is a simple wrapper around a key (which is just a byte stream itself). This way, we decouple
 // the implementation (file-based, memory, network, ..) and make it easily swap- and testable.
-type KeyPod interface {
+type Sink interface {
 	Read() ([]byte, error)
 	CanRead() error
 	Write(string) error
@@ -31,7 +39,15 @@ func NewIssuer(signer Signer, refresh ssh.RefreshSignatureStrategy) (*Issuer, er
 	return &Issuer{signerImpl: signer, refreshImpl: refresh}, nil
 }
 
-func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
+func (i *Issuer) SignClientCert(pubKey, signedKey Sink) error {
+	return i.signCert(pubKey, signedKey, User)
+}
+
+func (i *Issuer) SignHostCert(pubKey, signedKey Sink) error {
+	return i.signCert(pubKey, signedKey, Host)
+}
+
+func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 	err := signedKey.CanWrite()
 	if err != nil {
 		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)
@@ -59,7 +75,12 @@ func (i *Issuer) SignHostCert(pubKey, signedKey KeyPod) error {
 		return fmt.Errorf("could not read public key data: %v", err)
 	}
 
-	newSignedKeyData, err := i.signerImpl.SignPublicKey(string(pubKeyData))
+	var newSignedKeyData string
+	if certType == User {
+		newSignedKeyData, err = i.signerImpl.SignUserKey(string(pubKeyData))
+	} else {
+		newSignedKeyData, err = i.signerImpl.SignHostKey(string(pubKeyData))
+	}
 	if err != nil {
 		return fmt.Errorf("could not sign public key: %v", err)
 	}
