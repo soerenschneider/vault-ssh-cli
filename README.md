@@ -6,13 +6,13 @@ Sign SSH (host) keys using Hashicorp Vault
 
 ## Features
 
-✅ Sign SSH host public keys using Hashicorp Vault
+✅ Sign SSH host public keys
+
+✅ Sign SSH user public keys
 
 ✅ Follow best-practices and automate public key signing after passing a configurable certificate expiry thresholds
 
 ✅ Collect metrics for observability
-
-❌ Sign SSH client public keys
 
 ## Installation
 
