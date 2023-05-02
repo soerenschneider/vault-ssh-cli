@@ -26,7 +26,7 @@ type Config struct {
 	VaultMountSsh     string `mapstructure:"vault-ssh-mount"`
 	VaultSshRole      string `mapstructure:"vault-ssh-role"`
 
-	ForceNewSignature                      bool    `mapstructure:"force-signature"`
+	ForceNewSignature                      bool    `mapstructure:"force-new-signature"`
 	CertificateLifetimeThresholdPercentage float32 `mapstructure:"renew-threshold-percent"`
 
 	PublicKeyFile string `mapstructure:"pub-key-file"`
