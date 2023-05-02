@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/soerenschneider/ssh-key-signer/compare/v1.4.0...v1.4.1) (2023-05-02)
+
+
+### Bug Fixes
+
+* respect '--force-new-signature' flag ([8e3a62b](https://github.com/soerenschneider/ssh-key-signer/commit/8e3a62bcd119cff80738fea348b37bbe15f8f0cb))
+
 ## [1.4.0](https://github.com/soerenschneider/ssh-key-signer/compare/v1.3.1...v1.4.0) (2023-02-09)
 
 
