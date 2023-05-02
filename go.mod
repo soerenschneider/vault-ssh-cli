@@ -3,7 +3,7 @@ module github.com/soerenschneider/ssh-key-signer
 go 1.16
 
 require (
-	github.com/hashicorp/vault/api v1.9.0
+	github.com/hashicorp/vault/api v1.9.1
 	github.com/prometheus/client_golang v1.15.0
 	github.com/prometheus/common v0.42.0
 	github.com/rs/zerolog v1.29.1
