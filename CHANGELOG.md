@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/soerenschneider/ssh-key-signer/compare/v1.4.1...v1.5.0) (2023-08-02)
+
+
+### Miscellaneous Chores
+
+* release 1.5.0 ([64ada5a](https://github.com/soerenschneider/ssh-key-signer/commit/64ada5a49845717b0aeb9cd0ddbd1dee30e56207))
+
 ## [1.4.1](https://github.com/soerenschneider/ssh-key-signer/compare/v1.4.0...v1.4.1) (2023-05-02)
 
 
