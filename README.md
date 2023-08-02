@@ -1,6 +1,6 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/soerenschneider/ssh-key-signer)](https://goreportcard.com/report/github.com/soerenschneider/ssh-key-signer)
+[![Go Report Card](https://goreportcard.com/badge/github.com/soerenschneider/vault-ssh-cli)](https://goreportcard.com/report/github.com/soerenschneider/vault-ssh-cli)
 
-# ssh-key-signer
+# vault-ssh-cli
 
 Sign SSH (host) keys using Hashicorp Vault
 
@@ -33,8 +33,8 @@ $ sha256sum -c checksum.sha256
 ### Building it from source
 
 ```sh
-$ git clone https://github.com/soerenschneider/ssh-key-signer
-$ make build -C ssh-key-signer
+$ git clone https://github.com/soerenschneider/vault-ssh-cli
+$ make build -C vault-ssh-cli
 ```
 
 ## Configuration
@@ -68,7 +68,7 @@ Configuration is supported via CLI arguments, ENV variables and through yaml-enc
 ```bash
 # Sign this machine's host key (/etc/ssh/ssh_host_ed25519_key.pub) and write the received certificate to /etc/ssh/host_certificate.pub using the
 # identity "my-role-id" and the secret-id from file /secret-id
-ssh-key-signer sign-host-key \
+vault-ssh-cli sign-host-key \
      -a https://my-vault:8200 \
      --vault-role-id=my-role-id \
      --vault-secret-id-file=/secret-id \ 
@@ -80,10 +80,10 @@ ssh-key-signer sign-host-key \
 All configuration variables must be prefixed with `SSH_KEY_SIGNER`.
 
 ### Configuration Files
-By default, config files named `config.yaml` are sought for at locations `$HOME/.config/ssh-key-signer` and `/etc/ssh-key-signer`.
+By default, config files named `config.yaml` are sought for at locations `$HOME/.config/vault-ssh-cli` and `/etc/vault-ssh-cli`.
 
 ## Automating Key Signatures
-`ssh-key-signer` is suited to be scheduled continuously by an external actor such as systemd or (Kubernetes) cron jobs and only renew a certificate after its expiration period has passed a certain threshold.
+`vault-ssh-cli` is suited to be scheduled continuously by an external actor such as systemd or (Kubernetes) cron jobs and only renew a certificate after its expiration period has passed a certain threshold.
 
 ## Metrics
 

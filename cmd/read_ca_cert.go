@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/hashicorp/vault/api"
-	"github.com/soerenschneider/ssh-key-signer/internal"
-	"github.com/soerenschneider/ssh-key-signer/internal/signature"
-	"github.com/soerenschneider/ssh-key-signer/internal/signature/vault"
 	"strings"
+
+	"github.com/hashicorp/vault/api"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
 
 	log "github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"

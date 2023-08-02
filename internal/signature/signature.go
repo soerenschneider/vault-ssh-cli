@@ -2,8 +2,9 @@ package signature
 
 import (
 	"fmt"
-	"github.com/soerenschneider/ssh-key-signer/internal"
-	"github.com/soerenschneider/ssh-key-signer/pkg/ssh"
+
+	"github.com/soerenschneider/vault-ssh-cli/internal"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 
 	log "github.com/rs/zerolog/log"
 )

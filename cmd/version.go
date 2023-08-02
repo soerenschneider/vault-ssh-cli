@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/soerenschneider/ssh-key-signer/internal"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/spf13/cobra"
 )
 

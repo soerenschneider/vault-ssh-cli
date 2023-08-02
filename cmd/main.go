@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/soerenschneider/ssh-key-signer/internal"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/spf13/pflag"
 
 	"github.com/rs/zerolog"
@@ -14,11 +14,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cliDescription = fmt.Sprintf("Sign SSH keys - %s", internal.BuildVersion)
+var cliDescription = fmt.Sprintf("vault-ssh-cli - %s", internal.BuildVersion)
 
 const (
-	cliName               = "ssh-key-signer"
-	envPrefix             = "SSH_KEY_SIGNER"
+	cliName               = "vault-ssh-cli"
+	envPrefix             = "VAULT_SSH_CLI"
 	defaultConfigFilename = "config"
 
 	FLAG_VAULT_ADDRESS                     = "vault-address"
@@ -44,7 +44,7 @@ const (
 	FLAG_CONFIG_FILE     = "config-file"
 
 	FLAG_METRICS_FILE         = "metrics-file"
-	FLAG_METRICS_FILE_DEFAULT = "/var/lib/node_exporter/ssh_key_sign.prom"
+	FLAG_METRICS_FILE_DEFAULT = "/var/lib/node_exporter/vault-ssh-cli.prom"
 )
 
 func main() {
@@ -95,8 +95,8 @@ func config() (*Config, error) {
 
 	viper.SetConfigName(defaultConfigFilename)
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.config/ssh-key-signer")
-	viper.AddConfigPath("/etc/ssh-key-signer/")
+	viper.AddConfigPath("$HOME/.config/vault-ssh-cli")
+	viper.AddConfigPath("/etc/vault-ssh-cli/")
 
 	if viper.IsSet(FLAG_CONFIG_FILE) {
 		configFile := viper.GetString(FLAG_CONFIG_FILE)

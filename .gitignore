@@ -1,6 +1,6 @@
 /.idea
 /builds
-/ssh-key-signer
+/vault-ssh-cli
 **/.terraform/*
 /coverage.*
 

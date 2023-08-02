@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/soerenschneider/ssh-key-signer/internal"
-	"github.com/soerenschneider/ssh-key-signer/internal/signature"
-	"github.com/soerenschneider/ssh-key-signer/internal/signature/vault"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
 	"github.com/spf13/viper"
 
 	"github.com/hashicorp/vault/api"

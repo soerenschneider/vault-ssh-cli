@@ -2,13 +2,14 @@ package main
 
 import (
 	"errors"
-	"github.com/hashicorp/vault/api"
-	"github.com/soerenschneider/ssh-key-signer/internal/signature"
-	"github.com/soerenschneider/ssh-key-signer/internal/signature/vault"
-	"github.com/soerenschneider/ssh-key-signer/pkg/ssh"
 	"os/user"
 	"path/filepath"
 	"strings"
+
+	"github.com/hashicorp/vault/api"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 )
 
 func getVaultConfig(conf *Config) *api.Config {

@@ -1,4 +1,4 @@
-module github.com/soerenschneider/ssh-key-signer
+module github.com/soerenschneider/vault-ssh-cli
 
 go 1.16
 

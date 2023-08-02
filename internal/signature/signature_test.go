@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/soerenschneider/ssh-key-signer/pkg/ssh"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 )
 
 const (
