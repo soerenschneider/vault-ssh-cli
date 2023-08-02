@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/soerenschneider/ssh-key-signer/internal"
-	"github.com/spf13/pflag"
 	"os"
 	"strings"
+
+	"github.com/soerenschneider/ssh-key-signer/internal"
+	"github.com/spf13/pflag"
 
 	"github.com/rs/zerolog"
 	log "github.com/rs/zerolog/log"
@@ -21,10 +22,10 @@ const (
 	defaultConfigFilename = "config"
 
 	FLAG_VAULT_ADDRESS                     = "vault-address"
-	FLAG_VAULT_AUTH_TOKEN                  = "vault-auth-token"
+	FLAG_VAULT_AUTH_TOKEN                  = "vault-auth-token" // #nosec: G101
 	FLAG_VAULT_AUTH_APPROLE_ROLE_ID        = "vault-auth-approle-role-id"
-	FLAG_VAULT_AUTH_APPROLE_SECRET_ID      = "vault-auth-approle-secret-id"
-	FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE = "vault-auth-approle-secret-id-file"
+	FLAG_VAULT_AUTH_APPROLE_SECRET_ID      = "vault-auth-approle-secret-id"      // #nosec: G101
+	FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE = "vault-auth-approle-secret-id-file" // #nosec: G101
 	FLAG_VAULT_AUTH_APPROLE_MOUNT          = "vault-auth-approle-mount"
 	FLAG_VAULT_AUTH_APPROLE_MOUNT_DEFAULT  = "approle"
 	FLAG_VAULT_AUTH_IMPLICIT               = "vault-auth-implicit"

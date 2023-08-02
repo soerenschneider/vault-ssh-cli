@@ -53,7 +53,7 @@ func (fs *FileSink) CanRead() error {
 }
 
 func (fs *FileSink) Write(signedData string) error {
-	return os.WriteFile(fs.FilePath, []byte(signedData), 0640)
+	return os.WriteFile(fs.FilePath, []byte(signedData), 0640) // #nosec: G306
 }
 
 func (fs *FileSink) CanWrite() error {

@@ -2,12 +2,13 @@ package internal
 
 import (
 	"bytes"
+	"os"
+	"strings"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/common/expfmt"
 	"github.com/rs/zerolog/log"
-	"io/ioutil"
-	"strings"
 )
 
 const (
@@ -54,7 +55,7 @@ func WriteMetrics(path string) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(path, []byte(metrics), 0644)
+	err = os.WriteFile(path, []byte(metrics), 0644) // #nosec: G306
 	if err != nil {
 		log.Info().Msgf("Error writing metrics to '%s': %v", path, err)
 	}

@@ -1,0 +1,9 @@
+---
+linters:
+  enable:
+    - bodyclose
+    - gosec
+    - goconst
+    - prealloc
+    - zerologlint
+    - usestdlibvars

@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/soerenschneider/ssh-key-signer/internal"
 	"github.com/soerenschneider/ssh-key-signer/internal/signature"
 	"github.com/soerenschneider/ssh-key-signer/internal/signature/vault"
 	"github.com/spf13/viper"
-	"os"
-	"strings"
 
 	"github.com/hashicorp/vault/api"
 	log "github.com/rs/zerolog/log"
@@ -48,9 +49,12 @@ func signUserKeyEntryPoint(ccmd *cobra.Command, args []string) {
 	} else {
 		internal.MetricSuccess.Set(1)
 	}
+
 	internal.MetricRunTimestamp.SetToCurrentTime()
 	if len(config.MetricsFile) > 0 {
-		internal.WriteMetrics(config.MetricsFile)
+		if err := internal.WriteMetrics(config.MetricsFile); err != nil {
+			log.Warn().Err(err).Msg("could not write metrics")
+		}
 	}
 
 	if err == nil {
