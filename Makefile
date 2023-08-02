@@ -22,7 +22,7 @@ release: clean version-info cross-build
 
 signed-release: release
 	pass keys/signify/github | signify -S -s $(SIGNATURE_KEYFILE) -m $(BUILD_DIR)/$(CHECKSUM_FILE)
-	gh-upload-assets -o soerenschneider -r ssh-key-signer -f ~/.gh-token builds
+	gh-upload-assets -o soerenschneider -r vault-ssh-cli -f ~/.gh-token builds
 
 cross-build:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0       go build -ldflags="-X '$(MODULE)/internal.BuildVersion=${VERSION}' -X '$(MODULE)/internal.CommitHash=${COMMIT_HASH}'" -o $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64     ./cmd
