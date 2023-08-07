@@ -3,10 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-	log "github.com/rs/zerolog/log"
 	"os"
 	"reflect"
 	"strings"
+
+	log "github.com/rs/zerolog/log"
 )
 
 var sensitiveVars = map[string]struct{}{
