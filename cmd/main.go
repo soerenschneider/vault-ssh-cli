@@ -120,5 +120,7 @@ func config() (*Config, error) {
 		log.Fatal().Msgf("unable to decode into struct, %v", err)
 	}
 
+	config.ExpandPaths()
+
 	return config, nil
 }

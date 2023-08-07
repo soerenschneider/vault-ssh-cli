@@ -37,7 +37,11 @@ type Config struct {
 	MetricsFile string `mapstructure:"metrics-file"`
 }
 
-func (c *Config) PostValidation() {
+func (c *Config) ExpandPaths() {
+	if len(c.PublicKeyFile) > 0 {
+		c.PublicKeyFile = getExpandedFile(c.PublicKeyFile)
+	}
+
 	if len(c.SignedKeyFile) == 0 && len(c.PublicKeyFile) > 0 {
 		auto := strings.Replace(c.PublicKeyFile, ".pub", "", 1)
 		auto = getExpandedFile(fmt.Sprintf("%s-cert.pub", auto))

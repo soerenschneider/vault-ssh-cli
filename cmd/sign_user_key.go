@@ -73,7 +73,6 @@ func signUserKey(config *Config) error {
 		return fmt.Errorf("invalid config, %d errors: %s", len(errors), strings.Join(fmtErrors, ", "))
 	}
 
-	config.PostValidation()
 	vaultClient, err := api.NewClient(getVaultConfig(config))
 	if err != nil {
 		return fmt.Errorf("could not build vault client: %v", err)
