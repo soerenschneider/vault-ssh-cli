@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.5.0...v1.5.1) (2023-08-07)
+
+
+### Bug Fixes
+
+* expand user paths only at single point ([fe2b311](https://github.com/soerenschneider/vault-ssh-cli/commit/fe2b3114e9b1d4db12ca700b463ded1f16d9022a))
+
 ## [1.5.0](https://github.com/soerenschneider/ssh-key-signer/compare/v1.4.1...v1.5.0) (2023-08-02)
 
 
