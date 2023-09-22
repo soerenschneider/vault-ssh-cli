@@ -29,12 +29,12 @@ func (l *CertInfo) GetPercentage() float32 {
 func ParseCertData(pubKeyBytes []byte) (CertInfo, error) {
 	pubKey, _, _, _, err := ssh.ParseAuthorizedKey(pubKeyBytes)
 	if err != nil {
-		return CertInfo{}, fmt.Errorf("can not parse: %s", err)
+		return CertInfo{}, err
 	}
 
 	cert, ok := pubKey.(*ssh.Certificate)
 	if !ok {
-		return CertInfo{}, fmt.Errorf("pub key is not a valid certificate: %s", err)
+		return CertInfo{}, fmt.Errorf("pub key is not a valid certificate: %w", err)
 	}
 
 	return CertInfo{
@@ -48,12 +48,12 @@ func ParseCertData(pubKeyBytes []byte) (CertInfo, error) {
 func ReadCertFromDisk(publicKeyFile string) (CertInfo, error) {
 	bytes, err := os.ReadFile(publicKeyFile)
 	if err != nil {
-		return CertInfo{}, fmt.Errorf("reading cert failed, can not read file: %v", err)
+		return CertInfo{}, fmt.Errorf("reading cert failed: %w", err)
 	}
 
 	lifetime, err := ParseCertData(bytes)
 	if err != nil {
-		return CertInfo{}, fmt.Errorf("could not determine lifetime of cert: %v", err)
+		return CertInfo{}, fmt.Errorf("could not determine lifetime of cert: %w", err)
 	}
 
 	return lifetime, nil
