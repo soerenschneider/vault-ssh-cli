@@ -7,42 +7,51 @@ import (
 
 	"github.com/hashicorp/vault/api"
 	log "github.com/rs/zerolog/log"
+	"go.uber.org/multierr"
 )
+
+const defaultSshMountPath = "ssh"
 
 type AuthMethod interface {
 	Authenticate() (string, error)
 }
 
 type SignatureClient struct {
-	client  *api.Client
-	auth    AuthMethod
-	role    string
-	pathSsh string
+	client       *api.Client
+	auth         AuthMethod
+	role         string
+	sshMountPath string
 }
 
-func NewVaultSigner(client *api.Client, auth AuthMethod, vaultMount, backendName string) (*SignatureClient, error) {
+type VaultOpts func(client *SignatureClient) error
+
+func NewVaultSigner(client *api.Client, auth AuthMethod, opts ...VaultOpts) (*SignatureClient, error) {
 	if client == nil {
 		return nil, errors.New("nil client passed")
 	}
 
 	if auth == nil {
-		return nil, errors.New("nil auth passed")
+		return nil, errors.New("nil auth method passed")
 	}
 
-	if len(vaultMount) == 0 {
-		return nil, errors.New("empty vault mount passed")
+	vault := &SignatureClient{
+		client:       client,
+		auth:         auth,
+		sshMountPath: defaultSshMountPath,
 	}
 
-	return &SignatureClient{
-		client:  client,
-		auth:    auth,
-		pathSsh: vaultMount,
-		role:    backendName,
-	}, nil
+	var errs error
+	for _, opt := range opts {
+		if err := opt(vault); err != nil {
+			errs = multierr.Append(errs, err)
+		}
+	}
+
+	return vault, errs
 }
 
 func (c *SignatureClient) ReadCaCert() (string, error) {
-	path := fmt.Sprintf("%s/public_key", c.pathSsh)
+	path := fmt.Sprintf("%s/public_key", c.sshMountPath)
 	resp, err := c.client.Logical().ReadRaw(path)
 	if err != nil {
 		return "", fmt.Errorf("reading cert failed: %v", err)
@@ -57,7 +66,7 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 }
 
 func (c *SignatureClient) signPublicKey(role string, publicKeyData, certType string) (string, error) {
-	path := fmt.Sprintf("%s/sign/%s", c.pathSsh, role)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, role)
 	data := map[string]interface{}{
 		"public_key": publicKeyData,
 		"cert_type":  certType,
