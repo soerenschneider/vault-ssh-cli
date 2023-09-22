@@ -2,6 +2,7 @@ package signature
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
@@ -49,8 +50,7 @@ func (i *Issuer) SignHostCert(pubKey, signedKey Sink) error {
 }
 
 func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
-	err := signedKey.CanWrite()
-	if err != nil {
+	if err := signedKey.CanWrite(); err != nil {
 		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)
 	}
 
@@ -61,11 +61,11 @@ func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 		if err != nil {
 			return fmt.Errorf("could not read certificate: %v", err)
 		}
-		log.Info().Msgf("Cert '%d' lifetime at %.1f%%, valid from %s to %s", certInfo.Serial, certInfo.GetPercentage(), certInfo.ValidAfter, certInfo.ValidBefore)
+		log.Info().Msgf("Cert '%d' lifetime at %.1f%%, valid from '%s' to '%s'", certInfo.Serial, certInfo.GetPercentage(), certInfo.ValidAfter, certInfo.ValidBefore)
 
 		updateCertMetrics(certInfo)
 		if !i.refreshImpl.NeedsNewSignature(&certInfo) {
-			log.Info().Msg("Re-signing certificate not necessary")
+			log.Info().Msg("Signing certificate not necessary")
 			return nil
 		}
 		log.Info().Msg("Requesting new signature for public key")
@@ -73,7 +73,7 @@ func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 
 	pubKeyData, err := pubKey.Read()
 	if err != nil {
-		return fmt.Errorf("could not read public key data: %v", err)
+		return fmt.Errorf("could not read public key data: %w", err)
 	}
 
 	var newSignedKeyData string
@@ -83,21 +83,17 @@ func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 		newSignedKeyData, err = i.signerImpl.SignHostKey(string(pubKeyData))
 	}
 	if err != nil {
-		return fmt.Errorf("could not sign public key: %v", err)
+		return fmt.Errorf("could not sign public key: %w", err)
 	}
-	log.Info().Msg("Received signed cert")
 
 	certInfo, err := ssh.ParseCertData([]byte(newSignedKeyData))
-	if err == nil {
-		updateCertMetrics(certInfo)
-	}
-
-	log.Info().Msg("Writing signed cert")
-	err = signedKey.Write(newSignedKeyData)
 	if err != nil {
-		return fmt.Errorf("can't write signed cert: %v", err)
+		return fmt.Errorf("could not parse received cert data: %w", err)
 	}
-	return nil
+	log.Info().Msgf("Received signed SSH cert, valid until %s (%v)", certInfo.ValidBefore, certInfo.ValidBefore.Sub(time.Now()))
+	updateCertMetrics(certInfo)
+
+	return signedKey.Write(newSignedKeyData)
 }
 
 func updateCertMetrics(certInfo ssh.CertInfo) {
