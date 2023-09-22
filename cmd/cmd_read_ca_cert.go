@@ -5,11 +5,12 @@ import (
 	"strings"
 
 	"github.com/hashicorp/vault/api"
-	"github.com/soerenschneider/vault-ssh-cli/internal"
+	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault/auth"
 
-	log "github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -20,26 +21,24 @@ func readCaCertCmd() *cobra.Command {
 		Run:   readCaCertEntrypoint,
 	}
 
-	readCaCertCmd.PersistentFlags().StringP(FLAG_CA_FILE, "o", "", "Write the ca certificate to this output file")
+	readCaCertCmd.PersistentFlags().StringP(config.FLAG_CA_FILE, "o", "", "Write the ca certificate to this output file")
 
 	return readCaCertCmd
 }
 
 func readCaCertEntrypoint(ccmd *cobra.Command, args []string) {
-	log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
-	config, err := config()
+	config, err := getConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not read config")
 	}
 	config.Print()
 
-	err = readCaCert(config)
-	if err != nil {
+	if err := readCaCert(config); err != nil {
 		log.Fatal().Err(err).Msg("read-ca-crt unsuccessful")
 	}
 }
 
-func readCaCert(config *Config) error {
+func readCaCert(config *config.Config) error {
 	errors := config.ValidateCommon()
 	if len(errors) > 0 {
 		fmtErrors := make([]string, len(errors))
@@ -49,13 +48,13 @@ func readCaCert(config *Config) error {
 		return fmt.Errorf("invalid config, %d errors: %s", len(errors), strings.Join(fmtErrors, ", "))
 	}
 
-	vaultClient, err := api.NewClient(getVaultConfig(config))
+	vaultClient, err := api.NewClient(vault.DeriveVaultConfig(config))
 	if err != nil {
 		return fmt.Errorf("could not build vault client: %v", err)
 	}
 
-	authImpl := vault.NewNoAuth()
-	signingImpl, err := vault.NewVaultSigner(vaultClient, authImpl, config.VaultMountSsh, config.VaultSshRole)
+	vaultOpts := []vault.VaultOpts{vault.VaultRole(config.VaultSshRole)}
+	signingImpl, err := vault.NewVaultSigner(vaultClient, &auth.NoAuth{}, vaultOpts...)
 	if err != nil {
 		return fmt.Errorf("could not build vault impl: %v", err)
 	}
