@@ -5,13 +5,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/soerenschneider/vault-ssh-cli/internal"
-	"github.com/spf13/pflag"
-
 	"github.com/rs/zerolog"
 	log "github.com/rs/zerolog/log"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
+	config "github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"golang.org/x/term"
 )
 
 var cliDescription = fmt.Sprintf("vault-ssh-cli - %s", internal.BuildVersion)
@@ -48,12 +49,12 @@ const (
 )
 
 func main() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
+	initLogging()
 	root := &cobra.Command{
 		Use:   cliName,
 		Short: cliDescription,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
 
 			var errs []error
 			cmd.Flags().Visit(func(flag *pflag.Flag) {
@@ -109,18 +110,34 @@ func config() (*Config, error) {
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
-	if err != nil && viper.IsSet(FLAG_CONFIG_FILE) {
+	if err != nil && viper.IsSet(config.FLAG_CONFIG_FILE) {
 		log.Fatal().Msgf("Can't read config: %v", err)
 	}
 
-	var config *Config
-
+	var config *config.Config
 	err = viper.Unmarshal(&config)
 	if err != nil {
 		log.Fatal().Msgf("unable to decode into struct, %v", err)
 	}
 
 	config.ExpandPaths()
-
+	setupLogLevel(config.Debug)
 	return config, nil
+}
+
+func setupLogLevel(debug bool) {
+	level := zerolog.InfoLevel
+	if debug {
+		level = zerolog.DebugLevel
+	}
+	zerolog.SetGlobalLevel(level)
+}
+
+func initLogging() {
+	if term.IsTerminal(int(os.Stdout.Fd())) {
+		log.Logger = log.Output(zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: "15:04:05",
+		})
+	}
 }
