@@ -90,7 +90,7 @@ func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 	if err != nil {
 		return fmt.Errorf("could not parse received cert data: %w", err)
 	}
-	log.Info().Msgf("Received signed SSH cert, valid until %s (%v)", certInfo.ValidBefore, certInfo.ValidBefore.Sub(time.Now()))
+	log.Info().Msgf("Received signed SSH cert, valid until %s (%v)", certInfo.ValidBefore, time.Until(certInfo.ValidBefore))
 	updateCertMetrics(certInfo)
 
 	return signedKey.Write(newSignedKeyData)
