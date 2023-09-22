@@ -1,4 +1,4 @@
-package vault
+package auth
 
 type TokenAuth struct {
 	token string

@@ -1,12 +1,8 @@
-package vault
+package auth
 
 import "errors"
 
 type NoAuth struct {
-}
-
-func NewNoAuth() *NoAuth {
-	return &NoAuth{}
 }
 
 func (t *NoAuth) Authenticate() (string, error) {
