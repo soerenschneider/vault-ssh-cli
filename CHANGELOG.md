@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.5.1...v1.6.0) (2023-09-22)
+
+
+### Features
+
+* set global loglevel, auto detect whether running on terminal ([beba023](https://github.com/soerenschneider/vault-ssh-cli/commit/beba023a057858abd0be7459668cbb79ddcbc95d))
+
 ## [1.5.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.5.0...v1.5.1) (2023-08-07)
 
 
