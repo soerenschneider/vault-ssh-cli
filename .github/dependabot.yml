@@ -16,6 +16,6 @@ updates:
       prefix: "fix(deps)"
 
   - package-ecosystem: "github-actions"
-    directory: ""/"
+    directory: "/"
     schedule:
       interval: "weekly"
