@@ -16,14 +16,14 @@ Automate signing SSH host- and client certificates for a more secure and scalabl
 
 🛂 Authenticate against Vault using AppRole, (explicit) token or implicit__ auth
 
-💻 Runs effortlessly both on your workstation's CLI via command line flags or automated via systemd and config files on your server
+💻 Both your workstation's CLI and your servers up in the cloud are 1st class citizens
 
 ⏰ Automatically renews certificates based on its lifetime
 
 🔭 Provides metrics to increase observability for robust automation
 
 ## Example
-![asciicinema demo](demo.svg)
+![asciicinema demo](docs/asciicinema.svg)
 
 ## Installation
 
