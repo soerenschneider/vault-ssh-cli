@@ -1,18 +1,28 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/soerenschneider/vault-ssh-cli)](https://goreportcard.com/report/github.com/soerenschneider/vault-ssh-cli)
-
 # vault-ssh-cli
+[![Go Report Card](https://goreportcard.com/badge/github.com/soerenschneider/vault-ssh-cli)](https://goreportcard.com/report/github.com/soerenschneider/vault-ssh-cli)
+![release-workflow](https://github.com/soerenschneider/vault-ssh-cli/actions/workflows/release.yaml/badge.svg)
+![golangci-lint-workflow](https://github.com/soerenschneider/vault-ssh-cli/actions/workflows/golangci-lint.yaml/badge.svg)
 
-Sign SSH (host) keys using Hashicorp Vault
+Automate signing SSH host- and client certificates for a more secure and scalable infrastructure. 
 
 ## Features
 
-✅ Sign SSH host public keys
+🏭 Sign SSH host public keys to verify that a client securely connects to an (previously unknown) box
 
-✅ Sign SSH user public keys
+🏡 Sign SSH user public keys to allow a client connecting via certificate without the need to synchronize `authorized_keys` on all boxes
 
-✅ Follow best-practices and automate public key signing after passing a configurable certificate expiry thresholds
+🔗 Read a CA from a given path from Vault
 
-✅ Collect metrics for observability
+🛂 Authenticate against Vault using AppRole, (explicit) token or implicit__ auth
+
+💻 Runs effortlessly both on your workstation's CLI via command line flags or automated via systemd and config files on your server
+
+⏰ Automatically renews certificates based on its lifetime
+
+🔭 Provides metrics to increase observability for robust automation
+
+## Example
+![asciicinema demo](demo.svg)
 
 ## Installation
 
@@ -33,8 +43,7 @@ $ sha256sum -c checksum.sha256
 ### Building it from source
 
 ```sh
-$ git clone https://github.com/soerenschneider/vault-ssh-cli
-$ make build -C vault-ssh-cli
+$ go install github.com/soerenschneider/vault-ssh-cli@latest
 ```
 
 ## Configuration
@@ -42,38 +51,34 @@ Configuration is supported via CLI arguments, ENV variables and through yaml-enc
 
 ### Configuration Options
 
-| Name                 | Description                                                                                   | Default   |
-|----------------------|-----------------------------------------------------------------------------------------------|-----------|
-| vault-address        | Vault instance to connect to. If not specified, falls back to env var VAULT_ADDR.             |           |
-| vault-token          | Vault token to use for authentication. Can not be used in conjunction with AppRole login data |           |
-| vault-role-id        | Vault role_id to use for AppRole login. Can not be used in conjuction with Vault token flag.  |           |
-| vault-secret-id      | Vault secret_id to use for AppRole login. Can not be used in conjuction with Vault token flag.|           |
-| vault-secret-id-file | Flat file to read Vault secret_id from. Can not be used in conjuction with Vault token flag.  |           |
-| vault-mount-ssh      | Path where the SSH secret engine is mounted.                                                  | "ssh"     |
-| vault-mount-approle  | Path where the AppRole auth method is mounted.                                                | "approle" |
-| vault-ssh-role-name  | The name of the SSH role auth backend.                                                        | "host_key_sign" |
+| Name                              | Description                                                                                                                    | Default         |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| vault-address                     | Vault instance to connect to. If not specified, falls back to env var VAULT_ADDR.                                              |                 |
+| vault-auth-token                  | Vault token to use for authentication. Can not be used in conjunction with AppRole login data                                  |                 |
+| vault-auth-approle-role-id        | Vault role_id to use for AppRole login. Can not be used in conjuction with Vault token flag.                                   |                 |
+| vault-auth-approle-secret-id      | Vault secret_id to use for AppRole login. Can not be used in conjuction with Vault token flag.                                 |                 |
+| vault-auth-approle-secret-id-file | Flat file to read Vault secret_id from. Can not be used in conjuction with Vault token flag.                                   |                 |
+| vault-auth-approle-mount          | Path where the AppRole auth method is mounted.                                                                                 | "approle"       |
+| vault-auth-implicit               | Flat file to read Vault secret_id from. Can not be used in conjuction with Vault token flag.                                   |                 |
+| vault-ssh-mount                   | Path where the SSH secret engine is mounted.                                                                                   | "ssh"           |
+| vault-ssh-role                    | The name of the SSH role to use.                                                                                               | "host_key_sign" |
+| force-new-signature               | Force a new signature, no matter if a previously existing signature is still valid.                                            | "host_key_sign" |
+| renew-threshold-percent           | Renew a certificate when its lifetime is less than x percent.                                                                  | "host_key_sign" |
+| pub-key-file                      | The path to the file containing the public key to be signed.                                                                   | "host_key_sign" |
+| signed-key-file                   | The path of the file to write the certificate to.                                                                              | "host_key_sign" |
+| ca-file                           | The path of the file to write the CA certificate to.                                                                           | "host_key_sign" |
+| metrics-file                      | The path of the file to dump prometheus metrics to. This is usually a file under node_exporter's textfile collector directory. | "host_key_sign" |
+| debug                             | Print debug statements.                                                                                                        | "host_key_sign" |
 
-### sign-host-key subcommand
-| Name                 | Description                                                                                   | Default   |
-|----------------------|-----------------------------------------------------------------------------------------------|-----------|
-| signed-key-file      | File to write the signed key to                                                               |           |
-| pub-key-file         | SSH Public Host Key to sign                                                                   |           |
-| metrics-file         | Dump metrics to given file to be picked up by prometheus node_exporter                        | /var/lib/node_exporter/ssh_key_sign.prom |
-| lifetime-threshold-percent | If there's already a signed certificate at `signed-key-file`, only sign public key again if its lifetime period is less than the given threshold.                                                              | 33        |
-| force-new-signature  | Sign public key regardless of it's validity period                                            | false     |
-| config-file          | File to read configuration from
+## Example
 
-#### Example
-
+### Sign a user key
 ```bash
-# Sign this machine's host key (/etc/ssh/ssh_host_ed25519_key.pub) and write the received certificate to /etc/ssh/host_certificate.pub using the
-# identity "my-role-id" and the secret-id from file /secret-id
-vault-ssh-cli sign-host-key \
+vault-ssh-cli sign-user-key \
      -a https://my-vault:8200 \
-     --vault-role-id=my-role-id \
-     --vault-secret-id-file=/secret-id \ 
-     --pub-key-file=/etc/ssh/ssh_host_ed25519_key.pub \
-     --signed-key-file=/etc/ssh/host_certificate.pub
+     --vault-ssh-role=user \
+     --vault-auth-implicit=true \
+     --pub-key-file=/etc/ssh/ssh_host_ed25519_key.pub
 ```
 
 ### Configuration via ENV variables
