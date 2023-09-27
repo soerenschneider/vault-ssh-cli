@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	namespace = "ssh_key_signer"
+	namespace = "vault_ssh_cli"
 )
 
 var (
