@@ -10,7 +10,7 @@ Automate signing SSH host- and client certificates for a more secure and scalabl
 
 🏭 Sign SSH host public keys to verify that a client securely connects to an (previously unknown) box
 
-🏡 Sign SSH user public keys to allow a client connecting via certificate without the need to synchronize `authorized_keys` on all boxes
+👨‍💻 Sign SSH user public keys to allow a client connecting via certificate without the need to synchronize `authorized_keys` on all boxes
 
 🔗 Read a CA from a given path from Vault
 
