@@ -8,11 +8,11 @@ Automate signing SSH host- and client certificates for a more secure and scalabl
 
 ## Features
 
-🏭 Sign SSH host public keys to verify that a client securely connects to an (previously unknown) box
+🏭 Sign SSH host public keys
 
-👨‍💻 Sign SSH user public keys to allow a client connecting via certificate without the need to synchronize `authorized_keys` on all boxes
+👨‍💻 Sign SSH user public keys
 
-🔗 Read a CA from a given path from Vault
+🔗 Read CA from a given Vault ssh mount
 
 🛂 Authenticate against Vault using AppRole, (explicit) token or implicit__ auth
 
