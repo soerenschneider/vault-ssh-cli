@@ -30,6 +30,8 @@ SSH client certificates make sense
 
 SSH host certificates help prevent MitM attacks for clients that have not established trust yet for a server
 
+Both client and host certificates allow for efficient scaling regarding the number of clients and servers.
+
 vault-ssh-cli, leveraging its automation and observability capabilities, allows using SSH certificates while obeying security best practices such as short-lived certificates and timely re-generation.
 
 ## Example
