@@ -1,7 +1,8 @@
 # vault-ssh-cli
 [![Go Report Card](https://goreportcard.com/badge/github.com/soerenschneider/vault-ssh-cli)](https://goreportcard.com/report/github.com/soerenschneider/vault-ssh-cli)
-![release-workflow](https://github.com/soerenschneider/vault-ssh-cli/actions/workflows/release.yaml/badge.svg)
+![release-workflow](https://github.com/soerenschneider/vault-ssh-cli/actions/workflows/release-container.yaml/badge.svg)
 ![golangci-lint-workflow](https://github.com/soerenschneider/vault-ssh-cli/actions/workflows/golangci-lint.yaml/badge.svg)
+![test-workflow](https://github.com/soerenschneider/vault-ssh-cli/actions/workflows/test.yaml/badge.svg)
 
 Automate signing SSH host- and client certificates for a more secure and scalable infrastructure. 
 
