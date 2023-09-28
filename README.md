@@ -8,19 +8,13 @@ Automate signing SSH host- and client certificates for a more secure and scalabl
 
 ## Features
 
-🏭 Sign SSH host public keys
-
-👨‍💻 Sign SSH user public keys
-
-🔗 Read CA from a given Vault ssh mount
-
-🛂 Authenticate against Vault using AppRole, (explicit) token or implicit__ auth
-
-💻 Both your workstation's CLI and your servers up in the cloud are 1st class citizens
-
-⏰ Automatically renews certificates based on its lifetime
-
-🔭 Provides metrics to increase observability for robust automation
+🏭 Sign SSH host public keys<br/>
+👨‍💻 Sign SSH user public keys<br/>
+🔗 Read CA from a given Vault ssh mount<br/>
+🛂 Authenticate against Vault using AppRole, (explicit) token or _implicit_ auth<br/>
+💻 Both your workstation's CLI and your servers up in the cloud are 1st class citizens<br/>
+⏰ Automatically renews certificates based on its lifetime<br/>
+🔭 Provides metrics to increase observability for robust automation<br/>
 
 ## Why would I need this?
 
