@@ -24,10 +24,10 @@ func getSignHostKeyCmd() *cobra.Command {
 	signCmd.Flags().StringP(config.FLAG_PUBKEY_FILE, "p", "", "Public key file to sign")
 	signCmd.Flags().StringP(config.FLAG_SIGNED_KEY_FILE, "s", "", "File to write signature to")
 	signCmd.Flags().Float32(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT, "Sign key after passing lifetime threshold (in %)")
-	signCmd.Flags().String(config.FLAG_METRICS_FILE, config.FLAG_METRICS_FILE_DEFAULT, "File to write metrics to")
+	signCmd.Flags().String(config.FLAG_METRICS_FILE, "", "File to write metrics to")
 
 	viper.SetDefault(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT)
-	viper.SetDefault(config.FLAG_METRICS_FILE, config.FLAG_METRICS_FILE_DEFAULT)
+	viper.SetDefault(config.FLAG_METRICS_FILE, "")
 
 	return signCmd
 }

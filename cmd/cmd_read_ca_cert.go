@@ -53,7 +53,7 @@ func readCaCert(config *config.Config) error {
 		return fmt.Errorf("could not build vault client: %v", err)
 	}
 
-	vaultOpts := []vault.VaultOpts{vault.VaultRole(config.VaultSshRole)}
+	vaultOpts := []vault.VaultOpts{}
 	signingImpl, err := vault.NewVaultSigner(vaultClient, &auth.NoAuth{}, vaultOpts...)
 	if err != nil {
 		return fmt.Errorf("could not build vault impl: %v", err)

@@ -32,7 +32,7 @@ func main() {
 			log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
 
 			var errs []error
-			cmd.Flags().Visit(func(flag *pflag.Flag) {
+			cmd.Flags().VisitAll(func(flag *pflag.Flag) {
 				err := viper.BindPFlag(flag.Name, cmd.Flags().Lookup(flag.Name))
 				if err != nil {
 					errs = append(errs, err)
@@ -46,7 +46,9 @@ func main() {
 	}
 
 	root.PersistentFlags().StringP(config.FLAG_VAULT_ADDRESS, "a", "", "Vault instance to connect to. If not specified, falls back to env var VAULT_ADDR.")
+	viper.BindEnv(config.FLAG_VAULT_ADDRESS, "VAULT_ADDR")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_TOKEN, "t", "", "Vault token to use for authentication. Can not be used in conjunction with AppRole login data.")
+	viper.BindEnv(config.FLAG_VAULT_AUTH_TOKEN, "VAULT_TOKEN")
 	root.PersistentFlags().BoolP(config.FLAG_VAULT_AUTH_IMPLICIT, "i", false, "Try to implicitly authenticate to vault using VAULT_TOKEN env var or ~/.vault-token file.")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_APPROLE_ROLE_ID, "", "", "Vault role_id to use for AppRole login. Can not be used in conjuction with Vault token flag.")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_APPROLE_SECRET_ID, "", "", "Vault secret_id to use for AppRole login. Can not be used in conjuction with Vault token flag.")

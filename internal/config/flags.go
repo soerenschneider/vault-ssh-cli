@@ -23,7 +23,6 @@ const (
 	FLAG_SIGNED_KEY_FILE = "signed-key-file"
 	FLAG_CONFIG_FILE     = "config-file"
 
-	FLAG_METRICS_FILE         = "metrics-file"
-	FLAG_METRICS_FILE_DEFAULT = "/var/lib/node_exporter/vault-ssh-cli.prom"
-	FLAG_DEBUG                = "debug"
+	FLAG_METRICS_FILE = "metrics-file"
+	FLAG_DEBUG        = "debug"
 )
