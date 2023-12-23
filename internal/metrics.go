@@ -73,7 +73,7 @@ func dumpMetrics() (string, error) {
 
 	for _, f := range families {
 		// Writing these metrics will cause a duplication error with other tools writing the same metrics
-		if !strings.HasPrefix(f.GetName(), "go_") {
+		if strings.HasPrefix(f.GetName(), namespace) {
 			if err := enc.Encode(f); err != nil {
 				log.Info().Msgf("could not encode metric: %s", err.Error())
 			}
