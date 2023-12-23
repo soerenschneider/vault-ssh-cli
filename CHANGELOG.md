@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.0...v1.6.1) (2023-12-23)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/prometheus/client_golang ([#88](https://github.com/soerenschneider/vault-ssh-cli/issues/88)) ([ca303d8](https://github.com/soerenschneider/vault-ssh-cli/commit/ca303d8ffe7692dc975677892aec64c86a9bc64d))
+* **deps:** bump github.com/spf13/viper from 1.16.0 to 1.17.0 ([#91](https://github.com/soerenschneider/vault-ssh-cli/issues/91)) ([8c5a196](https://github.com/soerenschneider/vault-ssh-cli/commit/8c5a196d5d88b894119c23dfbb134f02a905992e))
+* **deps:** bump golang.org/x/crypto from 0.13.0 to 0.14.0 ([#90](https://github.com/soerenschneider/vault-ssh-cli/issues/90)) ([f826ed4](https://github.com/soerenschneider/vault-ssh-cli/commit/f826ed48f2cd88ad6f903dff747058ddea25c04d))
+* **deps:** bump golang.org/x/net from 0.15.0 to 0.17.0 ([#93](https://github.com/soerenschneider/vault-ssh-cli/issues/93)) ([44807d7](https://github.com/soerenschneider/vault-ssh-cli/commit/44807d74dfd4feb61c50b64d3e71a182d5562e2a))
+* only dump metrics defined by the tool itself ([a32ecfe](https://github.com/soerenschneider/vault-ssh-cli/commit/a32ecfe23cc58454e8fe2a71f879c9a05076543d))
+
 ## [1.6.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.5.1...v1.6.0) (2023-09-22)
 
 
