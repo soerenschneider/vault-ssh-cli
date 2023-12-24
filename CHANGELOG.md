@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.1...v1.6.2) (2023-12-24)
+
+
+### Bug Fixes
+
+* fix print version cmd ([6ff4776](https://github.com/soerenschneider/vault-ssh-cli/commit/6ff4776552e437c0ca7341a8aa81d8257d4c7c0e))
+
 ## [1.6.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.0...v1.6.1) (2023-12-23)
 
 
