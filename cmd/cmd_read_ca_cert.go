@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/vault/api"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
@@ -18,7 +19,10 @@ func readCaCertCmd() *cobra.Command {
 	var readCaCertCmd = &cobra.Command{
 		Use:   "read-ca",
 		Short: "Read ca cert from vault",
-		Run:   readCaCertEntrypoint,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
+		},
+		Run: readCaCertEntrypoint,
 	}
 
 	readCaCertCmd.PersistentFlags().StringP(config.FLAG_CA_FILE, "o", "", "Write the ca certificate to this output file")

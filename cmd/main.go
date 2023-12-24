@@ -29,8 +29,6 @@ func main() {
 		Use:   cliName,
 		Short: cliDescription,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
-
 			var errs []error
 			cmd.Flags().Visit(func(flag *pflag.Flag) {
 				err := viper.BindPFlag(flag.Name, cmd.Flags().Lookup(flag.Name))

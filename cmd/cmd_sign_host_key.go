@@ -16,7 +16,10 @@ func getSignHostKeyCmd() *cobra.Command {
 	var signCmd = &cobra.Command{
 		Use:   "sign-host-key",
 		Short: "Sign a SSH host public key",
-		Run:   signHostKeyEntryPoint,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			log.Info().Msgf("Starting up version %s (%s)", internal.BuildVersion, internal.CommitHash)
+		},
+		Run: signHostKeyEntryPoint,
 	}
 
 	signCmd.Flags().StringP(config.FLAG_VAULT_SSH_ROLE, "r", "", "The Vault role to use")
