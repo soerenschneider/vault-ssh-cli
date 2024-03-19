@@ -16,7 +16,7 @@ func SshMountPath(path string) VaultOpts {
 func VaultRole(role string) VaultOpts {
 	return func(v *SignatureClient) error {
 		if len(role) == 0 {
-			return errors.New("empty path provided")
+			return errors.New("empty role provided")
 		}
 
 		v.role = role
