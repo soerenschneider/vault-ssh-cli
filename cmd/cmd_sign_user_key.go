@@ -27,21 +27,22 @@ func getSignUserKeyCmd() *cobra.Command {
 	signCmd.Flags().StringP(config.FLAG_PUBKEY_FILE, "p", "", "Public key file to sign")
 	signCmd.Flags().StringP(config.FLAG_SIGNED_KEY_FILE, "s", "", "File to write signature to")
 	signCmd.Flags().Float32(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT, "Sign key after passing lifetime threshold (in %)")
-	signCmd.Flags().String(config.FLAG_METRICS_FILE, config.FLAG_METRICS_FILE_DEFAULT, "File to write metrics to")
-
-	viper.SetDefault(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT)
-	viper.SetDefault(config.FLAG_METRICS_FILE, config.FLAG_METRICS_FILE_DEFAULT)
+	signCmd.Flags().String(config.FLAG_METRICS_FILE, "", "File to write metrics to")
+	signCmd.Flags().Int(config.FLAG_TTL, 0, "TTL for the signed certificate")
+	signCmd.Flags().StringSlice(config.FLAG_PRINCIPALS, []string{}, "Principals")
 
 	return signCmd
 }
 
 func signUserKeyEntryPoint(ccmd *cobra.Command, args []string) {
-	config, err := getConfig()
+	viper.SetDefault(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT)
+
+	conf, err := getConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not read config")
 	}
-	config.Print()
-	err = signUserKey(config)
+	config.Print(conf)
+	err = signUserKey(conf)
 	if err != nil {
 		log.Error().Msgf("signing key not successful, %v", err)
 		internal.MetricSuccess.Set(0)
