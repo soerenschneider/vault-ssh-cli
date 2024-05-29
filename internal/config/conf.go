@@ -50,6 +50,10 @@ func (c *Config) ExpandPaths() {
 		c.PublicKeyFile = pkg.GetExpandedFile(c.PublicKeyFile)
 	}
 
+	if len(c.CaFile) > 0 {
+		c.CaFile = pkg.GetExpandedFile(c.CaFile)
+	}
+
 	if len(c.SignedKeyFile) == 0 && len(c.PublicKeyFile) > 0 {
 		auto := strings.Replace(c.PublicKeyFile, ".pub", "", 1)
 		auto = pkg.GetExpandedFile(fmt.Sprintf("%s-cert.pub", auto))
