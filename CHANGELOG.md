@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.2...v1.7.0) (2024-05-29)
+
+
+### Features
+
+* add support for setting ttl and principals ([2e7b6d1](https://github.com/soerenschneider/vault-ssh-cli/commit/2e7b6d1d61560cda540ecc97b6c30e205e0f16b7))
+
+
+### Bug Fixes
+
+* 121: Provide SshMountPath instead of VaultRole for readCACert: ([b58b26c](https://github.com/soerenschneider/vault-ssh-cli/commit/b58b26c38134853a9ab69cf2065b6c3c53b674b0))
+* expand all files ([3781095](https://github.com/soerenschneider/vault-ssh-cli/commit/3781095158d1d39144722a3dd8a7531349f0b829))
+
 ## [1.6.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.1...v1.6.2) (2023-12-24)
 
 
