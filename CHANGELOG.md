@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.0...v1.7.1) (2024-05-29)
+
+
+### Bug Fixes
+
+* **deps:** bump golang.org/x/net from 0.19.0 to 0.23.0 ([bf3d411](https://github.com/soerenschneider/vault-ssh-cli/commit/bf3d411c19d02826c10e4795800b7278559c9766))
+* use correct method ([6cdc1a7](https://github.com/soerenschneider/vault-ssh-cli/commit/6cdc1a7613d78fcd6721cdc7886da953fd4629d9))
+
 ## [1.7.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.2...v1.7.0) (2024-05-29)
 
 
