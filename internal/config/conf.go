@@ -58,27 +58,8 @@ func (c *Config) ExpandPaths() {
 	}
 }
 
-func (c *Config) ValidateCommon() []error {
-	errs := make([]error, 0)
-
-	if len(c.VaultAddress) == 0 {
-		errs = append(errs, fmt.Errorf("empty '%s' provided", FLAG_VAULT_ADDRESS))
-	}
-
-	if len(c.VaultMountSsh) == 0 {
-		errs = append(errs, fmt.Errorf("empty '%s' provided", FLAG_VAULT_SSH_MOUNT))
-	}
-
-	return errs
-}
-
-var (
-	validate = validator.New()
-)
-
-// ValidateSignCommand is called for commands that actually sign a public key.
-func (c *Config) ValidateSignCommand() error {
-	return validate.Struct(c)
+func Validate(s any) error {
+	return validate.Struct(s)
 }
 
 func (c *Config) Print() {
