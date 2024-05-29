@@ -29,7 +29,7 @@ func readCaCertCmd() *cobra.Command {
 }
 
 func readCaCertEntrypoint(ccmd *cobra.Command, args []string) {
-	conf, err := getReadCaConfig()
+	conf, err := getConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not read config")
 	}
