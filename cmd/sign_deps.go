@@ -26,24 +26,24 @@ func dieOnErr(err error, msg string) {
 	}
 }
 
-func buildApp(config *config.Config) *app {
+func buildApp(conf *config.Config) *app {
 	app := &app{}
 	var err error
 
-	app.vaultClient, err = api.NewClient(vault.DeriveVaultConfig(config))
+	app.vaultClient, err = api.NewClient(vault.FromConfig(conf))
 	dieOnErr(err, "could not build vault client")
 
-	app.vaultAuth, err = buildAuthImpl(app.vaultClient, config)
+	app.vaultAuth, err = buildAuthImpl(app.vaultClient, conf)
 	dieOnErr(err, "could not build auth strategy")
 
 	vaultOpts := []vault.VaultOpts{
-		vault.SshMountPath(config.VaultMountSsh),
-		vault.VaultRole(config.VaultSshRole),
+		vault.SshMountPath(conf.VaultMountSsh),
+		vault.VaultRole(conf.VaultSshRole),
 	}
 	app.signingImpl, err = vault.NewVaultSigner(app.vaultClient, app.vaultAuth, vaultOpts...)
 	dieOnErr(err, "could not build rotation client")
 
-	renewStrategy, err := buildRenewalStrategy(config)
+	renewStrategy, err := buildRenewalStrategy(conf)
 	dieOnErr(err, "could not build signature refresh strategy")
 
 	app.issuer, err = signature.NewIssuer(app.signingImpl, renewStrategy)
