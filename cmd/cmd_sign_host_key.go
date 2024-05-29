@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
+	log "github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
-	"github.com/spf13/viper"
-
-	log "github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func getSignHostKeyCmd() *cobra.Command {
@@ -51,8 +49,8 @@ func signHostKeyEntryPoint(ccmd *cobra.Command, args []string) {
 		internal.MetricSuccess.Set(1)
 	}
 	internal.MetricRunTimestamp.SetToCurrentTime()
-	if len(config.MetricsFile) > 0 {
-		if err := internal.WriteMetrics(config.MetricsFile); err != nil {
+	if len(conf.MetricsFile) > 0 {
+		if err := internal.WriteMetrics(conf.MetricsFile); err != nil {
 			log.Warn().Err(err).Msg("could not write metrics")
 		}
 	}
@@ -62,16 +60,12 @@ func signHostKeyEntryPoint(ccmd *cobra.Command, args []string) {
 	}
 }
 
-func signHostKey(config *config.Config) error {
-	err := config.ValidateSignCommand()
-	if err != nil {
-		return fmt.Errorf("invalid conf: %w", err)
+func signHostKey(conf *config.Config) error {
+	if err := config.Validate(conf); err != nil {
+		return err
 	}
-	app := buildApp(config)
-	keys := buildKeys(config)
+	app := buildApp(conf)
+	keys := buildKeys(conf)
 
-	if err = app.issuer.SignHostCert(keys.pub, keys.sign); err != nil {
-		return fmt.Errorf("could not sign public key: %v", err)
-	}
-	return nil
+	return app.issuer.SignHostCert(conf, keys.pub, keys.sign)
 }
