@@ -10,39 +10,40 @@ import (
 	"github.com/soerenschneider/vault-ssh-cli/pkg"
 )
 
-var sensitiveVars = map[string]struct{}{
-	FLAG_VAULT_AUTH_APPROLE_ROLE_ID:   {},
-	FLAG_VAULT_AUTH_APPROLE_SECRET_ID: {},
-	FLAG_VAULT_AUTH_TOKEN:             {},
-}
+var (
+	sensitiveVars = map[string]struct{}{
+		FLAG_VAULT_AUTH_APPROLE_ROLE_ID:   {},
+		FLAG_VAULT_AUTH_APPROLE_SECRET_ID: {},
+		FLAG_VAULT_AUTH_TOKEN:             {},
+	}
+
+	validate = validator.New()
+)
 
 type Config struct {
-	subcmd string
-
-	VaultAddress      string `mapstructure:"vault-address"  validate:"required"`
-	VaultToken        string `mapstructure:"vault-auth-token"`
-	VaultRoleId       string `mapstructure:"vault-auth-approle-role-id"`
-	VaultSecretId     string `mapstructure:"vault-auth-approle-secret-id"`
-	VaultSecretIdFile string `mapstructure:"vault-auth-approle-secret-id-file"`
-	VaultMountApprole string `mapstructure:"vault-auth-approle-mount"`
-	VaultAuthImplicit bool   `mapstructure:"vault-auth-implicit"`
-	VaultMountSsh     string `mapstructure:"vault-ssh-mount"  validate:"required"`
-	VaultSshRole      string `mapstructure:"vault-ssh-role" validate:"required"`
-
 	ForceNewSignature                      bool    `mapstructure:"force-new-signature"`
-	CertificateLifetimeThresholdPercentage float32 `mapstructure:"renew-threshold-percent" validate:""`
+	CertificateLifetimeThresholdPercentage float32 `mapstructure:"renew-threshold-percent" validate:"lte=80,gte=20"`
 
+	CaFile        string `mapstructure:"ca-file" validate:"omitempty,filepath"`
 	PublicKeyFile string `mapstructure:"pub-key-file" validate:"omitempty,file"`
 	SignedKeyFile string `mapstructure:"signed-key-file" validate:"omitempty,filepath"`
 
-	CaFile string `mapstructure:"ca-file" validate:"omitempty,filepath"`
+	Extensions map[string]string `mapstructure:"extensions" validate:"omitempty"`
+	Principals []string          `mapstructure:"principals" validate:"omitempty"`
 
 	MetricsFile string `mapstructure:"metrics-file" validate:"omitempty,filepath"`
 	Debug       bool   `mapstructure:"debug"`
-}
 
-func (c *Config) SetSubcmd(subcmd string) {
-	c.subcmd = subcmd
+	Ttl int `mapstructure:"ttl" validate:"gte=0"`
+
+	VaultAddress      string `mapstructure:"vault-address"`
+	VaultToken        string `mapstructure:"vault-auth-token"`
+	VaultRoleId       string `mapstructure:"vault-auth-approle-role-id"`
+	VaultSecretId     string `mapstructure:"vault-auth-approle-secret-id"`
+	VaultSecretIdFile string `mapstructure:"vault-auth-approle-secret-id-file" validate:"omitempty,file"`
+	VaultMountApprole string `mapstructure:"vault-auth-approle-mount"`
+	VaultMountSsh     string `mapstructure:"vault-ssh-mount" validate:"required"`
+	VaultSshRole      string `mapstructure:"vault-ssh-role" validate:"required"`
 }
 
 func (c *Config) ExpandPaths() {
@@ -66,7 +67,7 @@ func Validate(s any) error {
 	return validate.Struct(s)
 }
 
-func (c *Config) Print() {
+func Print(c any) {
 	log.Debug().Msg("Active config values:")
 	val := reflect.ValueOf(c).Elem()
 	for i := 0; i < val.NumField(); i++ {

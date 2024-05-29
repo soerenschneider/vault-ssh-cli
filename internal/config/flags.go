@@ -8,10 +8,12 @@ const (
 	FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE = "vault-auth-approle-secret-id-file" // #nosec: G101
 	FLAG_VAULT_AUTH_APPROLE_MOUNT          = "vault-auth-approle-mount"          // #nosec: G101
 	FLAG_VAULT_AUTH_APPROLE_MOUNT_DEFAULT  = "approle"
-	FLAG_VAULT_AUTH_IMPLICIT               = "vault-auth-implicit"
 	FLAG_VAULT_SSH_MOUNT                   = "vault-ssh-mount"
 	FLAG_VAULT_SSH_MOUNT_DEFAULT           = "ssh"
 	FLAG_VAULT_SSH_ROLE                    = "vault-ssh-role"
+
+	FLAG_TTL        = "ttl"
+	FLAG_PRINCIPALS = "principals"
 
 	FLAG_FORCE_NEW_SIGNATURE                = "force-new-signature"
 	FLAG_FORCE_NEW_SIGNATURE_DEFAULT        = false
