@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/hashicorp/vault/api"
 	log "github.com/rs/zerolog/log"
+	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
 	"go.uber.org/multierr"
 )
 
@@ -65,22 +67,44 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 	return string(data), nil
 }
 
-func (c *SignatureClient) signPublicKey(role string, publicKeyData, certType string) (string, error) {
-	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, role)
-	data := map[string]interface{}{
-		"public_key": publicKeyData,
-		"cert_type":  certType,
+func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
+	log.Info().Msg("Trying to authenticate against vault")
+	token, err := c.auth.Authenticate()
+	if err != nil {
+		return "", fmt.Errorf("could not authenticate: %v", err)
 	}
+
+	c.client.SetToken(token)
+	log.Info().Msgf("Signing public key using role '%s'", c.role)
+
+	data := convertHostKeyRequest(req)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Logical().Write(path, data)
 	if err != nil {
-		return "", fmt.Errorf("could not sign ssh public key: %v", err)
+		return "", err
 	}
 
-	signedData := fmt.Sprintf("%s", secret.Data["signed_key"])
-	return signedData, nil
+	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func (c *SignatureClient) SignHostKey(publicKeyData string) (string, error) {
+func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
+	data := map[string]interface{}{
+		"public_key": req.PublicKey,
+		"cert_type":  "host",
+	}
+
+	if req.Ttl > 0 {
+		data["ttl"] = req.Ttl
+	}
+
+	if len(req.Principals) > 0 {
+		data["valid_principals"] = strings.Join(req.Principals, ",")
+	}
+
+	return data
+}
+
+func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
 	log.Info().Msg("Trying to authenticate against vault")
 	token, err := c.auth.Authenticate()
 	if err != nil {
@@ -89,17 +113,30 @@ func (c *SignatureClient) SignHostKey(publicKeyData string) (string, error) {
 
 	c.client.SetToken(token)
 	log.Info().Msgf("Signing public key using role '%s'", c.role)
-	return c.signPublicKey(c.role, publicKeyData, "host")
-}
 
-func (c *SignatureClient) SignUserKey(publicKeyData string) (string, error) {
-	log.Info().Msg("Trying to authenticate against vault")
-	token, err := c.auth.Authenticate()
+	data := convertUserKeyRequest(req)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
+	secret, err := c.client.Logical().Write(path, data)
 	if err != nil {
-		return "", fmt.Errorf("could not authenticate: %v", err)
+		return "", err
 	}
 
-	c.client.SetToken(token)
-	log.Info().Msgf("Signing public key using role '%s'", c.role)
-	return c.signPublicKey(c.role, publicKeyData, "user")
+	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
+}
+
+func convertUserKeyRequest(req signature.SignUserKeyRequest) map[string]any {
+	data := map[string]interface{}{
+		"public_key": req.PublicKey,
+		"cert_type":  "user",
+	}
+
+	if req.Ttl > 0 {
+		data["ttl"] = req.Ttl
+	}
+
+	if len(req.Principals) > 0 {
+		data["valid_principals"] = strings.Join(req.Principals, ",")
+	}
+
+	return data
 }

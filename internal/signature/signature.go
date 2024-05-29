@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/soerenschneider/vault-ssh-cli/internal"
+	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 
 	log "github.com/rs/zerolog/log"
@@ -18,8 +19,8 @@ const (
 )
 
 type Signer interface {
-	SignHostKey(publicKeyData string) (string, error)
-	SignUserKey(publicKeyData string) (string, error)
+	SignUserKey(req SignUserKeyRequest) (string, error)
+	SignHostKey(req SignHostKeyRequest) (string, error)
 	ReadCaCert() (string, error)
 }
 
@@ -41,15 +42,48 @@ func NewIssuer(signer Signer, refresh ssh.RefreshSignatureStrategy) (*Issuer, er
 	return &Issuer{signerImpl: signer, refreshImpl: refresh}, nil
 }
 
-func (i *Issuer) SignClientCert(pubKey, signedKey Sink) error {
-	return i.signCert(pubKey, signedKey, User)
+func (i *Issuer) SignUserCert(conf *config.Config, pubKey, signedKey Sink) error {
+	pubKeyData, err := pubKey.Read()
+	if err != nil {
+		return fmt.Errorf("could not read public key data: %w", err)
+	}
+
+	req := SignUserKeyRequest{
+		PublicKey:  string(pubKeyData),
+		Ttl:        conf.Ttl,
+		Principals: conf.Principals,
+		Extensions: conf.Extensions,
+	}
+
+	signature := func() (string, error) {
+		return i.signerImpl.SignUserKey(req)
+	}
+
+	return i.signCert(signedKey, signature)
 }
 
-func (i *Issuer) SignHostCert(pubKey, signedKey Sink) error {
-	return i.signCert(pubKey, signedKey, Host)
+func (i *Issuer) SignHostCert(conf *config.Config, pubKey, signedKey Sink) error {
+	pubKeyData, err := pubKey.Read()
+	if err != nil {
+		return fmt.Errorf("could not read public key data: %w", err)
+	}
+
+	req := SignHostKeyRequest{
+		PublicKey:  string(pubKeyData),
+		Ttl:        conf.Ttl,
+		Principals: conf.Principals,
+		Extensions: conf.Extensions,
+	}
+
+	signature := func() (string, error) {
+		return i.signerImpl.SignHostKey(req)
+	}
+
+	return i.signCert(signedKey, signature)
+
 }
 
-func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
+func (i *Issuer) signCert(signedKey Sink, performSignature func() (string, error)) error {
 	if err := signedKey.CanWrite(); err != nil {
 		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)
 	}
@@ -71,17 +105,7 @@ func (i *Issuer) signCert(pubKey, signedKey Sink, certType CertType) error {
 		log.Info().Msg("Requesting new signature for public key")
 	}
 
-	pubKeyData, err := pubKey.Read()
-	if err != nil {
-		return fmt.Errorf("could not read public key data: %w", err)
-	}
-
-	var newSignedKeyData string
-	if certType == User {
-		newSignedKeyData, err = i.signerImpl.SignUserKey(string(pubKeyData))
-	} else {
-		newSignedKeyData, err = i.signerImpl.SignHostKey(string(pubKeyData))
-	}
+	newSignedKeyData, err := performSignature()
 	if err != nil {
 		return fmt.Errorf("could not sign public key: %w", err)
 	}

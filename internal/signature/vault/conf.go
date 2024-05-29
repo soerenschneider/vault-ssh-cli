@@ -5,9 +5,11 @@ import (
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 )
 
-func DeriveVaultConfig(conf *config.Config) *api.Config {
+func FromConfig(conf *config.Config) *api.Config {
 	vaultConfig := api.DefaultConfig()
 	vaultConfig.MaxRetries = 5
-	vaultConfig.Address = conf.VaultAddress
+	if len(conf.VaultAddress) > 0 {
+		vaultConfig.Address = conf.VaultAddress
+	}
 	return vaultConfig
 }
