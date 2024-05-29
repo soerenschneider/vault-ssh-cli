@@ -116,14 +116,14 @@ func buildAuthImpl(client *api.Client, conf *config.Config) (vault.AuthMethod, e
 		return auth.NewTokenAuth(token)
 	}
 
-	if conf.VaultAuthImplicit {
-		return auth.NewTokenImplicitAuth(), nil
+	if len(conf.VaultRoleId) > 0 && (len(conf.VaultSecretId) > 0 || len(conf.VaultSecretIdFile) > 0) {
+		approleData := make(map[string]string)
+		approleData[auth.KeyRoleId] = conf.VaultRoleId
+		approleData[auth.KeySecretId] = conf.VaultSecretId
+		approleData[auth.KeySecretIdFile] = conf.VaultSecretIdFile
+
+		return auth.NewAppRoleAuth(client, approleData)
 	}
 
-	approleData := make(map[string]string)
-	approleData[auth.KeyRoleId] = conf.VaultRoleId
-	approleData[auth.KeySecretId] = conf.VaultSecretId
-	approleData[auth.KeySecretIdFile] = conf.VaultSecretIdFile
-
-	return auth.NewAppRoleAuth(client, approleData)
+	return auth.NewTokenImplicitAuth(), nil
 }
