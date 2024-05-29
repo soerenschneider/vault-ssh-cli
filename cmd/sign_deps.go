@@ -107,7 +107,7 @@ func buildSignedKeySink(config *config.Config) (signature.Sink, error) {
 	}
 
 	expanded := pkg.GetExpandedFile(config.SignedKeyFile)
-	return &signature.FileSink{FilePath: expanded}, nil
+	return signature.NewAferoSink(expanded)
 }
 
 func buildAuthImpl(client *api.Client, conf *config.Config) (vault.AuthMethod, error) {
