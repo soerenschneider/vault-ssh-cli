@@ -40,6 +40,11 @@ func (s *AferoSink) Write(signedData string) error {
 }
 
 func (s *AferoSink) CanWrite() error {
+	exists, _ := afero.Exists(s.fs, s.filePath)
+	if !exists {
+		return nil
+	}
+
 	file, err := s.fs.OpenFile(s.filePath, os.O_WRONLY, 0640)
 	if err != nil {
 		return err
