@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.1...v1.7.2) (2024-06-02)
+
+
+### Bug Fixes
+
+* don't return error when cert file does not exist, yet ([7634a9a](https://github.com/soerenschneider/vault-ssh-cli/commit/7634a9a26da155217a778741b60e4ffd48801dc1))
+* omit validation of field when empty ([7bc2a85](https://github.com/soerenschneider/vault-ssh-cli/commit/7bc2a85001b0b05942189bbde67954478e80b3f6))
+* use the same pod impl for every all commands ([fa58a9b](https://github.com/soerenschneider/vault-ssh-cli/commit/fa58a9b74aa849217ea618da709e0fec116f1750))
+
 ## [1.7.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.0...v1.7.1) (2024-05-29)
 
 
