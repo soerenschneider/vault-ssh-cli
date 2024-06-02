@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.7.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.0...v1.7.1) (2024-05-29)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-jose/go-jose/v3 from 3.0.0 to 3.0.3 ([601fcc5](https://github.com/soerenschneider/vault-ssh-cli/commit/601fcc59958441e54946cd3b8474c82d0c7a5f9d))
+* **deps:** bump github.com/go-playground/validator/v10 ([83ca68f](https://github.com/soerenschneider/vault-ssh-cli/commit/83ca68fbe8a2261ca71a4443dd34d2f6dd58ae1d))
+* **deps:** bump github.com/prometheus/common from 0.44.0 to 0.53.0 ([9f2f585](https://github.com/soerenschneider/vault-ssh-cli/commit/9f2f585e44d5b93e31630b231b19020d079e6b67))
+* **deps:** bump github.com/spf13/cobra from 1.7.0 to 1.8.0 ([f64952b](https://github.com/soerenschneider/vault-ssh-cli/commit/f64952be5cad0cd2edf6cec5ca1fa95da0d75e10))
+* **deps:** bump golang.org/x/crypto from 0.21.0 to 0.23.0 ([bc838da](https://github.com/soerenschneider/vault-ssh-cli/commit/bc838dac168c890215877a61e5dd8b3d3e189ec0))
+* **deps:** bump golang.org/x/net from 0.19.0 to 0.23.0 ([bf3d411](https://github.com/soerenschneider/vault-ssh-cli/commit/bf3d411c19d02826c10e4795800b7278559c9766))
+* **deps:** bump golang.org/x/sys from 0.18.0 to 0.20.0 ([c0a5df1](https://github.com/soerenschneider/vault-ssh-cli/commit/c0a5df19fdf26261fd64415ca2b3c82aad076eae))
+* **deps:** bump google.golang.org/protobuf from 1.31.0 to 1.33.0 ([7b285e1](https://github.com/soerenschneider/vault-ssh-cli/commit/7b285e1737a15f7b1e01c8c2ecb4465ebdccb469))
+* fix dumping metrics with new prometheus version ([47f9b6c](https://github.com/soerenschneider/vault-ssh-cli/commit/47f9b6c8698c9d6ce2c5530cbea56c8dc9f06a12))
+* use correct method ([6cdc1a7](https://github.com/soerenschneider/vault-ssh-cli/commit/6cdc1a7613d78fcd6721cdc7886da953fd4629d9))
+
 ## [1.7.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.6.2...v1.7.0) (2024-05-29)
 
 
