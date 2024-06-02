@@ -63,7 +63,11 @@ func readCaCert(conf *config.Config) error {
 
 	var pod signature.Sink = &signature.BufferSink{Print: true}
 	if len(conf.CaFile) > 0 {
-		pod = &signature.FileSink{FilePath: conf.CaFile}
+		pod, err = signature.NewAferoSink(conf.CaFile)
+		if err != nil {
+			return err
+		}
 	}
+	
 	return pod.Write(caCert)
 }

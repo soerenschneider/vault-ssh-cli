@@ -94,7 +94,7 @@ func buildPublicKeySink(config *config.Config) (signature.Sink, error) {
 	}
 
 	expanded := pkg.GetExpandedFile(config.PublicKeyFile)
-	return &signature.FileSink{FilePath: expanded}, nil
+	return signature.NewAferoSink(expanded)
 }
 
 func buildSignedKeySink(config *config.Config) (signature.Sink, error) {
