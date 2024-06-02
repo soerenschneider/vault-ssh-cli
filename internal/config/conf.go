@@ -22,7 +22,7 @@ var (
 
 type Config struct {
 	ForceNewSignature                      bool    `mapstructure:"force-new-signature"`
-	CertificateLifetimeThresholdPercentage float32 `mapstructure:"renew-threshold-percent" validate:"lte=80,gte=20"`
+	CertificateLifetimeThresholdPercentage float32 `mapstructure:"renew-threshold-percent" validate:"omitempty,lte=80,gte=20"`
 
 	CaFile        string `mapstructure:"ca-file" validate:"omitempty,filepath"`
 	PublicKeyFile string `mapstructure:"pub-key-file" validate:"omitempty,file"`
