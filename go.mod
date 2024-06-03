@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/hashicorp/vault/api v1.10.0
-	github.com/prometheus/client_golang v1.19.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/prometheus/common v0.53.0
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/afero v1.11.0
