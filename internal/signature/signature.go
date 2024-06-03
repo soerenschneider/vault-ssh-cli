@@ -60,7 +60,7 @@ func (i *Issuer) SignUserCert(conf *config.Config, pubKey, signedKey Sink) error
 		return i.signerImpl.SignUserKey(req)
 	}
 
-	return i.signCert(signedKey, signature)
+	return i.signCert(signedKey, signature, conf.Retries)
 }
 
 func (i *Issuer) SignHostCert(conf *config.Config, pubKey, signedKey Sink) error {
@@ -80,11 +80,11 @@ func (i *Issuer) SignHostCert(conf *config.Config, pubKey, signedKey Sink) error
 		return i.signerImpl.SignHostKey(req)
 	}
 
-	return i.signCert(signedKey, signature)
+	return i.signCert(signedKey, signature, conf.Retries)
 
 }
 
-func (i *Issuer) signCert(signedKey Sink, performSignature func() (string, error)) error {
+func (i *Issuer) signCert(signedKey Sink, performSignature func() (string, error), retries int) error {
 	if err := signedKey.CanWrite(); err != nil {
 		return fmt.Errorf("not starting signing process, can't write to signedKeyPod: %v", err)
 	}
@@ -114,7 +114,7 @@ func (i *Issuer) signCert(signedKey Sink, performSignature func() (string, error
 
 	var backoffImpl backoff.BackOff
 	backoffImpl = backoff.NewExponentialBackOff()
-	backoffImpl = backoff.WithMaxRetries(backoffImpl, 5)
+	backoffImpl = backoff.WithMaxRetries(backoffImpl, uint64(retries))
 	if err := backoff.Retry(op, backoffImpl); err != nil {
 		return fmt.Errorf("could not sign public key: %w", err)
 	}

@@ -27,6 +27,7 @@ func getSignHostKeyCmd() *cobra.Command {
 	signCmd.Flags().Float32(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT, "Sign key after passing lifetime threshold (in %)")
 	signCmd.Flags().String(config.FLAG_METRICS_FILE, config.FLAG_METRICS_FILE_DEFAULT, "File to write metrics to")
 	signCmd.Flags().Int(config.FLAG_TTL, 0, "TTL for the signed certificate")
+	signCmd.Flags().Int(config.FLAG_RETRIES, config.FLAG_RETRIES_DEFAULT, "The amount of retries to perform on non-permanent errors")
 	signCmd.Flags().StringSlice(config.FLAG_PRINCIPALS, []string{}, "Principals")
 
 	return signCmd

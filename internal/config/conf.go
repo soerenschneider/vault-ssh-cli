@@ -21,6 +21,7 @@ var (
 )
 
 type Config struct {
+	Retries                                int     `mapstructure:"retries" validate:"gte=1,lte=20"`
 	ForceNewSignature                      bool    `mapstructure:"force-new-signature"`
 	CertificateLifetimeThresholdPercentage float32 `mapstructure:"renew-threshold-percent" validate:"omitempty,lte=80,gte=20"`
 

@@ -24,6 +24,7 @@ func readCaCertCmd() *cobra.Command {
 		Run: readCaCertEntrypoint,
 	}
 
+	readCaCertCmd.Flags().Int(config.FLAG_RETRIES, config.FLAG_RETRIES_DEFAULT, "The amount of retries to perform on non-permanent errors")
 	readCaCertCmd.PersistentFlags().StringP(config.FLAG_CA_FILE, "o", "", "Write the ca certificate to this output file")
 
 	return readCaCertCmd
@@ -65,7 +66,7 @@ func readCaCert(conf *config.Config) error {
 
 	var backoffImpl backoff.BackOff
 	backoffImpl = backoff.NewExponentialBackOff()
-	backoffImpl = backoff.WithMaxRetries(backoffImpl, 5)
+	backoffImpl = backoff.WithMaxRetries(backoffImpl, uint64(conf.Retries))
 	if err := backoff.Retry(op, backoffImpl); err != nil {
 		return fmt.Errorf("could not read ca: %w", err)
 	}

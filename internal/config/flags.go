@@ -17,6 +17,8 @@ const (
 
 	FLAG_FORCE_NEW_SIGNATURE                = "force-new-signature"
 	FLAG_FORCE_NEW_SIGNATURE_DEFAULT        = false
+	FLAG_RETRIES                            = "retries"
+	FLAG_RETRIES_DEFAULT                    = 15
 	FLAG_RENEW_THRESHOLD_PERCENTAGE         = "renew-threshold-percent"
 	FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT = 33.
 
