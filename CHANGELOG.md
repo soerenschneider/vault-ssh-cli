@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.2...v1.8.0) (2024-06-03)
+
+
+### Features
+
+* increase resilience by using exponential backoff ([7f7588b](https://github.com/soerenschneider/vault-ssh-cli/commit/7f7588b6d504b4974c514c9371f40659078da7f7))
+* make amount of retries configurable ([a8f7139](https://github.com/soerenschneider/vault-ssh-cli/commit/a8f7139ab930675fb5f91d4ae5195ae5b5368ce5))
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-playground/validator/v10 ([78efacb](https://github.com/soerenschneider/vault-ssh-cli/commit/78efacbe49739e2b56a00269d9101b658d24938b))
+* **deps:** bump github.com/prometheus/client_golang ([65b0637](https://github.com/soerenschneider/vault-ssh-cli/commit/65b0637200befa6a395c183c732585e7e8911bc5))
+* **deps:** bump github.com/prometheus/common from 0.53.0 to 0.54.0 ([c2c79d7](https://github.com/soerenschneider/vault-ssh-cli/commit/c2c79d70e13e258d2c566d0548e6956bcb78ed19))
+* **deps:** bump github.com/rs/zerolog from 1.31.0 to 1.33.0 ([0d3afb6](https://github.com/soerenschneider/vault-ssh-cli/commit/0d3afb63276733982a04c49d3ba0c6797be4c936))
+* **deps:** bump github.com/spf13/viper from 1.17.0 to 1.19.0 ([b59e455](https://github.com/soerenschneider/vault-ssh-cli/commit/b59e4557e1e153af661c08951178a03070b335de))
+
 ## [1.7.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.1...v1.7.2) (2024-06-02)
 
 
