@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/cenkalti/backoff/v3"
 	"github.com/hashicorp/vault/api"
 	"github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
@@ -56,9 +57,17 @@ func readCaCert(conf *config.Config) error {
 		return fmt.Errorf("could not build vault impl: %v", err)
 	}
 
-	caCert, err := signingImpl.ReadCaCert()
-	if err != nil {
+	var caCert string
+	op := func() error {
+		caCert, err = signingImpl.ReadCaCert()
 		return err
+	}
+
+	var backoffImpl backoff.BackOff
+	backoffImpl = backoff.NewExponentialBackOff()
+	backoffImpl = backoff.WithMaxRetries(backoffImpl, 5)
+	if err := backoff.Retry(op, backoffImpl); err != nil {
+		return fmt.Errorf("could not read ca: %w", err)
 	}
 
 	var pod signature.Sink = &signature.BufferSink{Print: true}
@@ -68,6 +77,6 @@ func readCaCert(conf *config.Config) error {
 			return err
 		}
 	}
-	
+
 	return pod.Write(caCert)
 }

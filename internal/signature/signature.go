@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cenkalti/backoff/v3"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
@@ -105,8 +106,16 @@ func (i *Issuer) signCert(signedKey Sink, performSignature func() (string, error
 		log.Info().Msg("Requesting new signature for public key")
 	}
 
-	newSignedKeyData, err := performSignature()
-	if err != nil {
+	var newSignedKeyData string
+	op := func() error {
+		newSignedKeyData, err = performSignature()
+		return err
+	}
+
+	var backoffImpl backoff.BackOff
+	backoffImpl = backoff.NewExponentialBackOff()
+	backoffImpl = backoff.WithMaxRetries(backoffImpl, 5)
+	if err := backoff.Retry(op, backoffImpl); err != nil {
 		return fmt.Errorf("could not sign public key: %w", err)
 	}
 

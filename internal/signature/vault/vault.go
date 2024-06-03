@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/cenkalti/backoff/v3"
 	"github.com/hashicorp/vault/api"
 	log "github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
@@ -56,6 +57,14 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 	path := fmt.Sprintf("%s/public_key", c.sshMountPath)
 	resp, err := c.client.Logical().ReadRaw(path)
 	if err != nil {
+		if err != nil {
+			var respErr *api.ResponseError
+			if errors.As(err, &respErr) && !shouldRetry(respErr.StatusCode) {
+				return "", backoff.Permanent(err)
+			}
+			return "", err
+		}
+
 		return "", fmt.Errorf("reading cert failed: %v", err)
 	}
 
@@ -81,6 +90,10 @@ func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string,
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Logical().Write(path, data)
 	if err != nil {
+		var respErr *api.ResponseError
+		if errors.As(err, &respErr) && !shouldRetry(respErr.StatusCode) {
+			return "", backoff.Permanent(err)
+		}
 		return "", err
 	}
 
@@ -118,6 +131,10 @@ func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string,
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Logical().Write(path, data)
 	if err != nil {
+		var respErr *api.ResponseError
+		if errors.As(err, &respErr) && !shouldRetry(respErr.StatusCode) {
+			return "", backoff.Permanent(err)
+		}
 		return "", err
 	}
 
@@ -139,4 +156,39 @@ func convertUserKeyRequest(req signature.SignUserKeyRequest) map[string]any {
 	}
 
 	return data
+}
+
+func shouldRetry(statusCode int) bool {
+	switch statusCode {
+	case 400, // Bad Request
+		401, // Unauthorized
+		403, // Forbidden
+		404, // Not Found
+		405, // Method Not Allowed
+		406, // Not Acceptable
+		407, // Proxy Authentication Required
+		409, // Conflict
+		410, // Gone
+		411, // Length Required
+		412, // Precondition Failed
+		413, // Payload Too Large
+		414, // URI Too Long
+		415, // Unsupported Media Type
+		416, // Range Not Satisfiable
+		417, // Expectation Failed
+		418, // I'm a Teapot
+		421, // Misdirected Request
+		422, // Unprocessable Entity
+		423, // Locked (WebDAV)
+		424, // Failed Dependency (WebDAV)
+		425, // Too Early
+		426, // Upgrade Required
+		428, // Precondition Required
+		429, // Too Many Requests
+		431, // Request Header Fields Too Large
+		451: // Unavailable For Legal Reasons
+		return false
+	default:
+		return true
+	}
 }
