@@ -3,7 +3,7 @@ module github.com/soerenschneider/vault-ssh-cli
 go 1.19
 
 require (
-	github.com/cenkalti/backoff/v3 v3.0.0
+	github.com/cenkalti/backoff/v3 v3.2.2
 	github.com/go-playground/validator/v10 v10.21.0
 	github.com/hashicorp/vault/api v1.10.0
 	github.com/prometheus/client_golang v1.19.1
