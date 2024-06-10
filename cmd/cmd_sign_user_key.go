@@ -35,6 +35,7 @@ func getSignUserKeyCmd() *cobra.Command {
 
 func signUserKeyEntryPoint(ccmd *cobra.Command, args []string) {
 	viper.SetDefault(config.FLAG_RENEW_THRESHOLD_PERCENTAGE, config.FLAG_RENEW_THRESHOLD_PERCENTAGE_DEFAULT)
+	viper.SetDefault(config.FLAG_RETRIES, config.FLAG_RETRIES_DEFAULT)
 
 	conf, err := getConfig()
 	if err != nil {

@@ -12,6 +12,7 @@ import (
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault/auth"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func readCaCertCmd() *cobra.Command {
@@ -31,6 +32,8 @@ func readCaCertCmd() *cobra.Command {
 }
 
 func readCaCertEntrypoint(ccmd *cobra.Command, args []string) {
+	viper.SetDefault(config.FLAG_RETRIES, config.FLAG_RETRIES_DEFAULT)
+
 	conf, err := getConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not read config")
