@@ -9,6 +9,7 @@ import (
 	log "github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	config "github.com/soerenschneider/vault-ssh-cli/internal/config"
+	"github.com/soerenschneider/vault-ssh-cli/pkg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -73,7 +74,7 @@ func getConfig() (*config.Config, error) {
 	viper.AddConfigPath("/etc/vault-ssh-cli/")
 
 	if viper.IsSet(config.FLAG_CONFIG_FILE) {
-		configFile := viper.GetString(config.FLAG_CONFIG_FILE)
+		configFile := pkg.GetExpandedFile(viper.GetString(config.FLAG_CONFIG_FILE))
 		log.Info().Msgf("Trying to read config from '%s'", configFile)
 		viper.SetConfigFile(configFile)
 	}
