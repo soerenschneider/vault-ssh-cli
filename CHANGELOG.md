@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.0...v1.8.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* expand config file ([299296f](https://github.com/soerenschneider/vault-ssh-cli/commit/299296fbcad88e94335e1c3eedc960398f5233b4))
+* set viper default for retries ([534b213](https://github.com/soerenschneider/vault-ssh-cli/commit/534b2138a9af05a9d9bbb25ff35408120642c3fe))
+
 ## [1.8.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.7.2...v1.8.0) (2024-06-03)
 
 
