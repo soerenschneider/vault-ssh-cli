@@ -106,7 +106,7 @@ func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
 		"cert_type":  "host",
 	}
 
-	if req.Ttl > 0 {
+	if len(req.Ttl) > 0 {
 		data["ttl"] = req.Ttl
 	}
 
@@ -147,7 +147,7 @@ func convertUserKeyRequest(req signature.SignUserKeyRequest) map[string]any {
 		"cert_type":  "user",
 	}
 
-	if req.Ttl > 0 {
+	if len(req.Ttl) > 0 {
 		data["ttl"] = req.Ttl
 	}
 

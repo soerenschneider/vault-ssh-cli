@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	log "github.com/rs/zerolog/log"
@@ -18,6 +20,7 @@ var (
 	}
 
 	validate = validator.New()
+	once     sync.Once
 )
 
 type Config struct {
@@ -35,7 +38,7 @@ type Config struct {
 	MetricsFile string `mapstructure:"metrics-file" validate:"omitempty,filepath"`
 	Debug       bool   `mapstructure:"debug"`
 
-	Ttl int `mapstructure:"ttl" validate:"gte=0"`
+	Ttl string `mapstructure:"ttl" validate:"ttl"`
 
 	VaultAddress      string `mapstructure:"vault-address"`
 	VaultToken        string `mapstructure:"vault-auth-token"`
@@ -82,4 +85,33 @@ func Print(c any) {
 			}
 		}
 	}
+}
+
+func (c *Config) Validate() error {
+	once.Do(func() {
+		validate = validator.New()
+
+		if err := validate.RegisterValidation("ttl", validateTtl); err != nil {
+			log.Fatal().Err(err).Msg("could not build custom validation 'ttl'")
+		}
+	})
+
+	return validate.Struct(c)
+}
+
+func validateTtl(fl validator.FieldLevel) bool {
+	// Get the field value and check if it's a slice
+	field := fl.Field()
+	if field.Kind() != reflect.String {
+		return false
+	}
+
+	// Convert to string and check its value
+	ttl := field.String()
+	d, err := time.ParseDuration(ttl)
+	if err != nil {
+		return false
+	}
+
+	return d.Minutes() >= 5
 }
