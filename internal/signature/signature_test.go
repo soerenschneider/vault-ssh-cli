@@ -67,7 +67,9 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferSink{},
-				conf:      &config.Config{},
+				conf: &config.Config{
+					Retries: 3,
+				},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -81,7 +83,9 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferSink{Data: []byte(signedData)},
-				conf:      &config.Config{},
+				conf: &config.Config{
+					Retries: 3,
+				},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -95,7 +99,9 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferSink{Data: []byte(signedData)},
-				conf:      &config.Config{},
+				conf: &config.Config{
+					Retries: 3,
+				},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -109,7 +115,9 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferSink{},
-				conf:      &config.Config{},
+				conf: &config.Config{
+					Retries: 3,
+				},
 			},
 			wantErr:           true,
 			wantSignatureData: "",
@@ -123,7 +131,9 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &BufferSink{Data: []byte("garbage data, no ssh cert")},
-				conf:      &config.Config{},
+				conf: &config.Config{
+					Retries: 3,
+				},
 			},
 			wantErr:           true,
 			wantSignatureData: "garbage data, no ssh cert",
