@@ -20,7 +20,6 @@ type VaultClient interface {
 
 type SignatureClient struct {
 	client       VaultClient
-	role         string
 	sshMountPath string
 }
 
@@ -71,7 +70,7 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 
 func (c *SignatureClient) SignHostKey(req SignatureRequest) (string, error) {
 	data := convertHostKeyRequest(req)
-	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, req.VaultRole)
 	secret, err := c.client.Write(path, data)
 	if err != nil {
 		var respErr *api.ResponseError
@@ -103,7 +102,7 @@ func convertHostKeyRequest(req SignatureRequest) map[string]any {
 
 func (c *SignatureClient) SignUserKey(req SignatureRequest) (string, error) {
 	data := convertUserKeyRequest(req)
-	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, req.VaultRole)
 	secret, err := c.client.Write(path, data)
 	if err != nil {
 		var respErr *api.ResponseError

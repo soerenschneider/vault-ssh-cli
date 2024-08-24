@@ -79,7 +79,7 @@ func buildKeys(config *config.Config) *keys {
 	return keys
 }
 
-func buildRenewalStrategy(config *config.Config) (signature.RefreshSignatureStrategy, error) {
+func buildRenewalStrategy(config *config.Config) (signature.IssueStrategy, error) {
 	if config.ForceNewSignature {
 		return signature.NewSimpleStrategy(true), nil
 	}

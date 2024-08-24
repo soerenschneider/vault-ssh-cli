@@ -2,8 +2,8 @@ package signature
 
 import "fmt"
 
-type RefreshSignatureStrategy interface {
-	NeedsNewSignature(*CertInfo) bool
+type IssueStrategy interface {
+	NeedsIssuing(*CertInfo) bool
 }
 
 type SimpleStrategy struct {
@@ -14,7 +14,7 @@ func NewSimpleStrategy(renew bool) *SimpleStrategy {
 	return &SimpleStrategy{renew}
 }
 
-func (s *SimpleStrategy) NeedsNewSignature(lifetime *CertInfo) bool {
+func (s *SimpleStrategy) NeedsIssuing(lifetime *CertInfo) bool {
 	return s.renew
 }
 
@@ -30,6 +30,6 @@ func NewPercentageStrategy(minPercentageLeft float32) (*PercentageRenewStrategy,
 	return &PercentageRenewStrategy{minPercentageLeft: minPercentageLeft}, nil
 }
 
-func (s *PercentageRenewStrategy) NeedsNewSignature(lifetime *CertInfo) bool {
+func (s *PercentageRenewStrategy) NeedsIssuing(lifetime *CertInfo) bool {
 	return lifetime.GetPercentage() <= s.minPercentageLeft
 }

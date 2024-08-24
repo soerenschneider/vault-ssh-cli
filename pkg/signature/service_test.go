@@ -44,7 +44,7 @@ func (s *SadSignerDummy) ReadCaCert() (string, error) {
 func TestIssuer_SignHostCert(t *testing.T) {
 	type fields struct {
 		signerImpl  Signer
-		refreshImpl RefreshSignatureStrategy
+		refreshImpl IssueStrategy
 	}
 	type args struct {
 		pubKey    KeyStorage
@@ -142,8 +142,8 @@ func TestIssuer_SignHostCert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			i := &SignatureService{
-				signerImpl:  tt.fields.signerImpl,
-				refreshImpl: tt.fields.refreshImpl,
+				signerImpl:    tt.fields.signerImpl,
+				issueStrategy: tt.fields.refreshImpl,
 			}
 			_, err := i.SignHostCert(tt.args.conf, tt.args.pubKey, tt.args.signedKey)
 			if (err != nil) != tt.wantErr {

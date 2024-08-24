@@ -12,14 +12,3 @@ func WithSshMountPath(path string) VaultOpts {
 		return nil
 	}
 }
-
-func WithVaultRole(role string) VaultOpts {
-	return func(v *SignatureClient) error {
-		if len(role) == 0 {
-			return errors.New("empty role provided")
-		}
-
-		v.role = role
-		return nil
-	}
-}

@@ -1,6 +1,7 @@
 package signature
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/cenkalti/backoff/v3"
@@ -27,12 +28,20 @@ type KeyStorage interface {
 }
 
 type SignatureService struct {
-	signerImpl  Signer
-	refreshImpl RefreshSignatureStrategy
+	signerImpl    Signer
+	issueStrategy IssueStrategy
 }
 
-func NewSignatureService(signer Signer, refresh RefreshSignatureStrategy) (*SignatureService, error) {
-	return &SignatureService{signerImpl: signer, refreshImpl: refresh}, nil
+func NewSignatureService(signer Signer, issueStrategy IssueStrategy) (*SignatureService, error) {
+	if signer == nil {
+		return nil, errors.New("empty signer provided")
+	}
+
+	if issueStrategy == nil {
+		return nil, errors.New("empty issue strategy implementation provided")
+	}
+
+	return &SignatureService{signerImpl: signer, issueStrategy: issueStrategy}, nil
 }
 
 func (i *SignatureService) SignUserCert(signRequest SignatureRequest, pubKey, signedKey KeyStorage) (*IssueResult, error) {
@@ -85,7 +94,7 @@ func (i *SignatureService) signCert(signedKey KeyStorage, performSignature func(
 			return nil, fmt.Errorf("could not read certificate: %v", err)
 		}
 
-		if !i.refreshImpl.NeedsNewSignature(&certInfo) {
+		if !i.issueStrategy.NeedsIssuing(&certInfo) {
 			ret.Status = Noop
 			return ret, nil
 		}
