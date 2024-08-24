@@ -8,9 +8,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
-	signature2 "github.com/soerenschneider/vault-ssh-cli/pkg/signature"
+	"github.com/soerenschneider/vault-ssh-cli/internal/vault"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -55,8 +54,8 @@ func readCaCert(conf *config.Config) error {
 		return fmt.Errorf("could not build vault client: %v", err)
 	}
 
-	vaultOpts := []signature2.VaultOpts{signature2.SshMountPath(conf.VaultMountSsh)}
-	signingImpl, err := signature2.NewVaultSigner(vaultClient.Logical(), vaultOpts...)
+	vaultOpts := []signature.VaultOpts{signature.WithSshMountPath(conf.VaultMountSsh)}
+	signingImpl, err := signature.NewVaultSigner(vaultClient.Logical(), vaultOpts...)
 	if err != nil {
 		return fmt.Errorf("could not build vault impl: %v", err)
 	}
@@ -74,9 +73,9 @@ func readCaCert(conf *config.Config) error {
 		return fmt.Errorf("could not read ca: %w", err)
 	}
 
-	var pod signature.Sink = &signature.BufferSink{Print: true}
+	var pod signature.KeyStorage = &internal.BufferSink{Print: true}
 	if len(conf.CaFile) > 0 {
-		pod, err = signature.NewAferoSink(conf.CaFile)
+		pod, err = internal.NewAferoSink(conf.CaFile)
 		if err != nil {
 			return err
 		}

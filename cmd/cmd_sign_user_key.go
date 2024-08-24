@@ -70,5 +70,8 @@ func signUserKey(conf *config.Config) error {
 	app := buildApp(conf)
 	keys := buildKeys(conf)
 
-	return app.issuer.SignUserCert(conf, keys.pub, keys.sign)
+	outcome, err := app.signatureService.SignUserCert(conf, keys.pub, keys.sign)
+	writeLogs(outcome)
+	updateCertMetrics(outcome)
+	return err
 }

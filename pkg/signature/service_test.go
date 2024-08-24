@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
-	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
-	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 )
 
 const (
@@ -16,11 +15,11 @@ const (
 
 type HappySignerDummy struct{}
 
-func (s *HappySignerDummy) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
+func (s *HappySignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
 	return signedData, nil
 }
 
-func (s *HappySignerDummy) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
+func (s *HappySignerDummy) SignUserKey(req SignUserKeyRequest) (string, error) {
 	return signedData, nil
 }
 
@@ -30,11 +29,11 @@ func (s *HappySignerDummy) ReadCaCert() (string, error) {
 
 type SadSignerDummy struct{}
 
-func (s *SadSignerDummy) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
+func (s *SadSignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
-func (s *SadSignerDummy) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
+func (s *SadSignerDummy) SignUserKey(req SignUserKeyRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
@@ -45,11 +44,11 @@ func (s *SadSignerDummy) ReadCaCert() (string, error) {
 func TestIssuer_SignHostCert(t *testing.T) {
 	type fields struct {
 		signerImpl  Signer
-		refreshImpl ssh.RefreshSignatureStrategy
+		refreshImpl RefreshSignatureStrategy
 	}
 	type args struct {
-		pubKey    Sink
-		signedKey Sink
+		pubKey    KeyStorage
+		signedKey KeyStorage
 		conf      *config.Config
 	}
 	tests := []struct {
@@ -63,11 +62,11 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			name: "Happy path - no existing signed key",
 			fields: fields{
 				signerImpl:  &HappySignerDummy{},
-				refreshImpl: ssh.NewSimpleStrategy(true),
+				refreshImpl: NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferSink{},
+				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &internal.BufferSink{},
 				conf: &config.Config{
 					Retries: 3,
 				},
@@ -79,11 +78,11 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			name: "Happy path - existing signed key",
 			fields: fields{
 				signerImpl:  &HappySignerDummy{},
-				refreshImpl: ssh.NewSimpleStrategy(true),
+				refreshImpl: NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferSink{Data: []byte(signedData)},
+				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &internal.BufferSink{Data: []byte(signedData)},
 				conf: &config.Config{
 					Retries: 3,
 				},
@@ -95,11 +94,11 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			name: "Happy path - existing signed key, renew strategy prohibits new signature",
 			fields: fields{
 				signerImpl:  &HappySignerDummy{},
-				refreshImpl: ssh.NewSimpleStrategy(false),
+				refreshImpl: NewSimpleStrategy(false),
 			},
 			args: args{
-				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferSink{Data: []byte(signedData)},
+				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &internal.BufferSink{Data: []byte(signedData)},
 				conf: &config.Config{
 					Retries: 3,
 				},
@@ -111,11 +110,11 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			name: "Error: sad signer",
 			fields: fields{
 				signerImpl:  &SadSignerDummy{},
-				refreshImpl: ssh.NewSimpleStrategy(true),
+				refreshImpl: NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferSink{},
+				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &internal.BufferSink{},
 				conf: &config.Config{
 					Retries: 3,
 				},
@@ -127,11 +126,11 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			name: "Error: already signed certificate is garbage data",
 			fields: fields{
 				signerImpl:  &HappySignerDummy{},
-				refreshImpl: ssh.NewSimpleStrategy(true),
+				refreshImpl: NewSimpleStrategy(true),
 			},
 			args: args{
-				pubKey:    &BufferSink{Data: []byte(randomSshPublicKey)},
-				signedKey: &BufferSink{Data: []byte("garbage data, no ssh cert")},
+				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
+				signedKey: &internal.BufferSink{Data: []byte("garbage data, no ssh cert")},
 				conf: &config.Config{
 					Retries: 3,
 				},
@@ -142,12 +141,13 @@ func TestIssuer_SignHostCert(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Issuer{
+			i := &SignatureService{
 				signerImpl:  tt.fields.signerImpl,
 				refreshImpl: tt.fields.refreshImpl,
 			}
-			if err := i.SignHostCert(tt.args.conf, tt.args.pubKey, tt.args.signedKey); (err != nil) != tt.wantErr {
-				t.Errorf("Issuer.SignHostCert() error = %v, wantErr %v", err, tt.wantErr)
+			_, err := i.SignHostCert(tt.args.conf, tt.args.pubKey, tt.args.signedKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SignatureService.SignHostCert() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			signature, _ := tt.args.signedKey.Read()

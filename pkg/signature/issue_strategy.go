@@ -1,4 +1,4 @@
-package ssh
+package signature
 
 import "fmt"
 

@@ -8,20 +8,20 @@ import (
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/api/auth/approle"
 	"github.com/rs/zerolog/log"
+	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault/auth"
+	"github.com/soerenschneider/vault-ssh-cli/internal/vault"
+	"github.com/soerenschneider/vault-ssh-cli/internal/vault/auth"
 	"github.com/soerenschneider/vault-ssh-cli/pkg"
-	signature2 "github.com/soerenschneider/vault-ssh-cli/pkg/signature"
-	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 )
 
 type app struct {
 	vaultClient *api.Client
 	vaultAuth   api.AuthMethod
-	signingImpl *signature2.SignatureClient
-	issuer      *signature.Issuer
+
+	signatureClient  *signature.SignatureClient
+	signatureService *signature.SignatureService
 }
 
 func dieOnErr(err error, msg string) {
@@ -45,55 +45,49 @@ func buildApp(conf *config.Config) *app {
 	_, err = app.vaultAuth.Login(ctx, app.vaultClient)
 	dieOnErr(err, "could not login to vault")
 
-	vaultOpts := []signature2.VaultOpts{
-		signature2.SshMountPath(conf.VaultMountSsh),
-		signature2.VaultRole(conf.VaultSshRole),
+	vaultOpts := []signature.VaultOpts{
+		signature.WithSshMountPath(conf.VaultMountSsh),
+		signature.WithVaultRole(conf.VaultSshRole),
 	}
-	app.signingImpl, err = signature2.NewVaultSigner(app.vaultClient.Logical(), vaultOpts...)
+	app.signatureClient, err = signature.NewVaultSigner(app.vaultClient.Logical(), vaultOpts...)
 	dieOnErr(err, "could not build rotation client")
 
 	renewStrategy, err := buildRenewalStrategy(conf)
 	dieOnErr(err, "could not build signature refresh strategy")
 
-	app.issuer, err = signature.NewIssuer(app.signingImpl, renewStrategy)
+	app.signatureService, err = signature.NewSignatureService(app.signatureClient, renewStrategy)
 	dieOnErr(err, "could not build issuer")
 
 	return app
 }
 
 type keys struct {
-	pub  signature.Sink
-	sign signature.Sink
+	pub  signature.KeyStorage
+	sign signature.KeyStorage
 }
 
 func buildKeys(config *config.Config) *keys {
 	var err error
 	keys := &keys{}
 
-	keys.pub, err = buildPublicKeySink(config)
+	keys.pub, err = buildPublicKeyStorage(config)
 	dieOnErr(err, "can't build sink to read public key from")
 
-	err = keys.pub.CanRead()
-	dieOnErr(err, "can not read from public key")
-
-	keys.sign, err = buildSignedKeySink(config)
+	keys.sign, err = buildSignedKeyStorage(config)
 	dieOnErr(err, "can't build sink to write signature to")
-
-	err = keys.sign.CanWrite()
-	dieOnErr(err, "is not writable")
 
 	return keys
 }
 
-func buildRenewalStrategy(config *config.Config) (ssh.RefreshSignatureStrategy, error) {
+func buildRenewalStrategy(config *config.Config) (signature.RefreshSignatureStrategy, error) {
 	if config.ForceNewSignature {
-		return ssh.NewSimpleStrategy(true), nil
+		return signature.NewSimpleStrategy(true), nil
 	}
 
-	return ssh.NewPercentageStrategy(config.CertificateLifetimeThresholdPercentage)
+	return signature.NewPercentageStrategy(config.CertificateLifetimeThresholdPercentage)
 }
 
-func buildPublicKeySink(config *config.Config) (signature.Sink, error) {
+func buildPublicKeyStorage(config *config.Config) (signature.KeyStorage, error) {
 	if nil == config {
 		return nil, errors.New("empty config supplied")
 	}
@@ -103,10 +97,10 @@ func buildPublicKeySink(config *config.Config) (signature.Sink, error) {
 	}
 
 	expanded := pkg.GetExpandedFile(config.PublicKeyFile)
-	return signature.NewAferoSink(expanded)
+	return internal.NewAferoSink(expanded)
 }
 
-func buildSignedKeySink(config *config.Config) (signature.Sink, error) {
+func buildSignedKeyStorage(config *config.Config) (signature.KeyStorage, error) {
 	if nil == config {
 		return nil, errors.New("empty config supplied")
 	}
@@ -116,7 +110,7 @@ func buildSignedKeySink(config *config.Config) (signature.Sink, error) {
 	}
 
 	expanded := pkg.GetExpandedFile(config.SignedKeyFile)
-	return signature.NewAferoSink(expanded)
+	return internal.NewAferoSink(expanded)
 }
 
 func buildAuthImpl(client *api.Client, conf *config.Config) (api.AuthMethod, error) {

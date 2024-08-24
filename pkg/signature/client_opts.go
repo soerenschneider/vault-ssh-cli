@@ -2,7 +2,7 @@ package signature
 
 import "errors"
 
-func SshMountPath(path string) VaultOpts {
+func WithSshMountPath(path string) VaultOpts {
 	return func(v *SignatureClient) error {
 		if len(path) == 0 {
 			return errors.New("empty path provided")
@@ -13,7 +13,7 @@ func SshMountPath(path string) VaultOpts {
 	}
 }
 
-func VaultRole(role string) VaultOpts {
+func WithVaultRole(role string) VaultOpts {
 	return func(v *SignatureClient) error {
 		if len(role) == 0 {
 			return errors.New("empty role provided")
