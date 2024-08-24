@@ -1,4 +1,4 @@
-package vault
+package signature
 
 import (
 	"errors"
@@ -8,8 +8,6 @@ import (
 
 	"github.com/cenkalti/backoff/v3"
 	"github.com/hashicorp/vault/api"
-	log "github.com/rs/zerolog/log"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
 	"go.uber.org/multierr"
 )
 
@@ -22,7 +20,6 @@ type VaultClient interface {
 
 type SignatureClient struct {
 	client       VaultClient
-	role         string
 	sshMountPath string
 }
 
@@ -71,11 +68,9 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 	return string(data), nil
 }
 
-func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
-	log.Info().Msgf("Signing public key using role '%s'", c.role)
-
+func (c *SignatureClient) SignHostKey(req SignatureRequest) (string, error) {
 	data := convertHostKeyRequest(req)
-	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, req.VaultRole)
 	secret, err := c.client.Write(path, data)
 	if err != nil {
 		var respErr *api.ResponseError
@@ -88,7 +83,7 @@ func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string,
 	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
+func convertHostKeyRequest(req SignatureRequest) map[string]any {
 	data := map[string]interface{}{
 		"public_key": req.PublicKey,
 		"cert_type":  "host",
@@ -105,11 +100,9 @@ func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
 	return data
 }
 
-func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
-	log.Info().Msgf("Signing public key using role '%s'", c.role)
-
+func (c *SignatureClient) SignUserKey(req SignatureRequest) (string, error) {
 	data := convertUserKeyRequest(req)
-	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
+	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, req.VaultRole)
 	secret, err := c.client.Write(path, data)
 	if err != nil {
 		var respErr *api.ResponseError
@@ -122,7 +115,7 @@ func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string,
 	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func convertUserKeyRequest(req signature.SignUserKeyRequest) map[string]any {
+func convertUserKeyRequest(req SignatureRequest) map[string]any {
 	data := map[string]interface{}{
 		"public_key": req.PublicKey,
 		"cert_type":  "user",

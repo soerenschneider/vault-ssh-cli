@@ -1,4 +1,4 @@
-package signature
+package internal
 
 import (
 	"errors"

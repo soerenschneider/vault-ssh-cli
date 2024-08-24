@@ -1,4 +1,4 @@
-package signature
+package internal
 
 import (
 	"reflect"
@@ -14,13 +14,13 @@ func TestFsPod_Read(t *testing.T) {
 	}{
 		{
 			name:     "read hello file",
-			filePath: "../../contrib/tests/hello.txt",
+			filePath: "../contrib/tests/hello.txt",
 			want:     []byte("hello"),
 			wantErr:  false,
 		},
 		{
 			name:     "read non-existent file",
-			filePath: "../../contrib/tests/hello-im-not-here.txt",
+			filePath: "../contrib/tests/hello-im-not-here.txt",
 			want:     nil,
 			wantErr:  true,
 		},
@@ -50,12 +50,12 @@ func TestFsPod_CanRead(t *testing.T) {
 	}{
 		{
 			name:     "read hello file",
-			filePath: "../../contrib/tests/hello.txt",
+			filePath: "../contrib/tests/hello.txt",
 			wantErr:  false,
 		},
 		{
 			name:     "read non-existent file",
-			filePath: "../../contrib/tests/hello-im-not-here.txt",
+			filePath: "../contrib/tests/hello-im-not-here.txt",
 			wantErr:  true,
 		},
 	}

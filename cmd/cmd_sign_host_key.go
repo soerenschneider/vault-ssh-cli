@@ -1,11 +1,14 @@
 package main
 
 import (
+	"math"
 	"os"
+	"time"
 
 	log "github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -69,5 +72,57 @@ func signHostKey(conf *config.Config) error {
 	app := buildApp(conf)
 	keys := buildKeys(conf)
 
-	return app.issuer.SignHostCert(conf, keys.pub, keys.sign)
+	request := signature.SignatureRequest{
+		Ttl:        conf.Ttl,
+		Principals: conf.Principals,
+		Extensions: conf.Extensions,
+		VaultRole:  conf.VaultSshRole,
+	}
+
+	outcome, err := app.signatureService.SignHostCert(request, keys.pub, keys.sign)
+	writeLogs(outcome)
+	updateCertMetrics(outcome)
+	return err
+}
+
+func writeLogs(result *signature.IssueResult) {
+	if result == nil || signature.Unknown == result.Status {
+		log.Warn().Msg("empty/unknown signature result returned")
+		return
+	}
+
+	switch result.Status {
+	case signature.Noop:
+		if result.ExistingCert != nil {
+			percentage := result.ExistingCert.GetPercentage()
+			secondsUntilExpiry := int64(math.Max(0, time.Until(result.ExistingCert.ValidBefore).Seconds()))
+			log.Info().Int64("ttl", secondsUntilExpiry).Int("lifetime", int(percentage)).Msgf("Existing certificate at %2.f%% still until %v", percentage, result.ExistingCert.ValidBefore)
+		}
+	case signature.Issued:
+		if result.IssuedCert != nil {
+			percentage := result.IssuedCert.GetPercentage()
+			secondsUntilExpiry := int64(time.Until(result.IssuedCert.ValidBefore).Seconds())
+			log.Info().Int64("ttl", secondsUntilExpiry).Int("lifetime", int(percentage)).Msgf("Issued new certificate, valid until %s", result.IssuedCert.ValidBefore)
+		}
+	}
+}
+
+func updateCertMetrics(result *signature.IssueResult) {
+	if result == nil {
+		log.Warn().Msg("can not update metrics, empty signature result")
+		return
+	}
+
+	var certInfo *signature.CertInfo
+	if result.IssuedCert != nil {
+		certInfo = result.IssuedCert
+	} else if result.ExistingCert != nil {
+		certInfo = result.ExistingCert
+	}
+
+	if certInfo != nil {
+		internal.MetricCertExpiry.Set(float64(certInfo.ValidBefore.Unix()))
+		internal.MetricCertLifetimePercent.Set(float64(certInfo.GetPercentage()))
+		internal.MetricCertLifetimeTotal.Set(certInfo.ValidBefore.Sub(certInfo.ValidAfter).Seconds())
+	}
 }

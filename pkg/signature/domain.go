@@ -1,4 +1,4 @@
-package ssh
+package signature
 
 import (
 	"fmt"
@@ -8,6 +8,15 @@ import (
 
 	"golang.org/x/crypto/ssh"
 )
+
+type SignatureRequest struct {
+	PublicKey  string `validation:"required"`
+	Ttl        string `validation:"gt=600"`
+	Principals []string
+	Extensions map[string]string
+
+	VaultRole string
+}
 
 type CertInfo struct {
 	Type        string
@@ -57,4 +66,18 @@ func ReadCertFromDisk(publicKeyFile string) (CertInfo, error) {
 	}
 
 	return lifetime, nil
+}
+
+type IssueStatus int
+
+const (
+	Issued  IssueStatus = iota
+	Noop    IssueStatus = iota
+	Unknown IssueStatus = iota
+)
+
+type IssueResult struct {
+	ExistingCert *CertInfo
+	IssuedCert   *CertInfo
+	Status       IssueStatus
 }
