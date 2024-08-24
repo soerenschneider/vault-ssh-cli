@@ -13,13 +13,14 @@ import (
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault/auth"
 	"github.com/soerenschneider/vault-ssh-cli/pkg"
+	signature2 "github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 )
 
 type app struct {
 	vaultClient *api.Client
 	vaultAuth   api.AuthMethod
-	signingImpl *vault.SignatureClient
+	signingImpl *signature2.SignatureClient
 	issuer      *signature.Issuer
 }
 
@@ -44,11 +45,11 @@ func buildApp(conf *config.Config) *app {
 	_, err = app.vaultAuth.Login(ctx, app.vaultClient)
 	dieOnErr(err, "could not login to vault")
 
-	vaultOpts := []vault.VaultOpts{
-		vault.SshMountPath(conf.VaultMountSsh),
-		vault.VaultRole(conf.VaultSshRole),
+	vaultOpts := []signature2.VaultOpts{
+		signature2.SshMountPath(conf.VaultMountSsh),
+		signature2.VaultRole(conf.VaultSshRole),
 	}
-	app.signingImpl, err = vault.NewVaultSigner(app.vaultClient.Logical(), vaultOpts...)
+	app.signingImpl, err = signature2.NewVaultSigner(app.vaultClient.Logical(), vaultOpts...)
 	dieOnErr(err, "could not build rotation client")
 
 	renewStrategy, err := buildRenewalStrategy(conf)

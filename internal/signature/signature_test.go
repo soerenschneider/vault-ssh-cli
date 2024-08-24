@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 )
 
@@ -15,11 +16,11 @@ const (
 
 type HappySignerDummy struct{}
 
-func (s *HappySignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
+func (s *HappySignerDummy) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
 	return signedData, nil
 }
 
-func (s *HappySignerDummy) SignUserKey(req SignUserKeyRequest) (string, error) {
+func (s *HappySignerDummy) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
 	return signedData, nil
 }
 
@@ -29,11 +30,11 @@ func (s *HappySignerDummy) ReadCaCert() (string, error) {
 
 type SadSignerDummy struct{}
 
-func (s *SadSignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
+func (s *SadSignerDummy) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
-func (s *SadSignerDummy) SignUserKey(req SignUserKeyRequest) (string, error) {
+func (s *SadSignerDummy) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 

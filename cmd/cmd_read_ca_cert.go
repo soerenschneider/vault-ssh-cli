@@ -10,6 +10,7 @@ import (
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature/vault"
+	signature2 "github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -54,8 +55,8 @@ func readCaCert(conf *config.Config) error {
 		return fmt.Errorf("could not build vault client: %v", err)
 	}
 
-	vaultOpts := []vault.VaultOpts{vault.SshMountPath(conf.VaultMountSsh)}
-	signingImpl, err := vault.NewVaultSigner(vaultClient.Logical(), vaultOpts...)
+	vaultOpts := []signature2.VaultOpts{signature2.SshMountPath(conf.VaultMountSsh)}
+	signingImpl, err := signature2.NewVaultSigner(vaultClient.Logical(), vaultOpts...)
 	if err != nil {
 		return fmt.Errorf("could not build vault impl: %v", err)
 	}

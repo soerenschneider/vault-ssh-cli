@@ -1,4 +1,4 @@
-package vault
+package signature
 
 import "errors"
 

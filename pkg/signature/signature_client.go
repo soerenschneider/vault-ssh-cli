@@ -1,4 +1,4 @@
-package vault
+package signature
 
 import (
 	"errors"
@@ -9,7 +9,6 @@ import (
 	"github.com/cenkalti/backoff/v3"
 	"github.com/hashicorp/vault/api"
 	log "github.com/rs/zerolog/log"
-	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
 	"go.uber.org/multierr"
 )
 
@@ -71,7 +70,7 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 	return string(data), nil
 }
 
-func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
+func (c *SignatureClient) SignHostKey(req SignHostKeyRequest) (string, error) {
 	log.Info().Msgf("Signing public key using role '%s'", c.role)
 
 	data := convertHostKeyRequest(req)
@@ -88,7 +87,7 @@ func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string,
 	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
+func convertHostKeyRequest(req SignHostKeyRequest) map[string]any {
 	data := map[string]interface{}{
 		"public_key": req.PublicKey,
 		"cert_type":  "host",
@@ -105,7 +104,7 @@ func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
 	return data
 }
 
-func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
+func (c *SignatureClient) SignUserKey(req SignUserKeyRequest) (string, error) {
 	log.Info().Msgf("Signing public key using role '%s'", c.role)
 
 	data := convertUserKeyRequest(req)
@@ -122,7 +121,7 @@ func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string,
 	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func convertUserKeyRequest(req signature.SignUserKeyRequest) map[string]any {
+func convertUserKeyRequest(req SignUserKeyRequest) map[string]any {
 	data := map[string]interface{}{
 		"public_key": req.PublicKey,
 		"cert_type":  "user",

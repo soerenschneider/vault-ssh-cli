@@ -7,6 +7,7 @@ import (
 	"github.com/cenkalti/backoff/v3"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/ssh"
 
 	log "github.com/rs/zerolog/log"
@@ -20,8 +21,8 @@ const (
 )
 
 type Signer interface {
-	SignUserKey(req SignUserKeyRequest) (string, error)
-	SignHostKey(req SignHostKeyRequest) (string, error)
+	SignUserKey(req signature.SignUserKeyRequest) (string, error)
+	SignHostKey(req signature.SignHostKeyRequest) (string, error)
 	ReadCaCert() (string, error)
 }
 
@@ -49,7 +50,7 @@ func (i *Issuer) SignUserCert(conf *config.Config, pubKey, signedKey Sink) error
 		return fmt.Errorf("could not read public key data: %w", err)
 	}
 
-	req := SignUserKeyRequest{
+	req := signature.SignUserKeyRequest{
 		PublicKey:  string(pubKeyData),
 		Ttl:        conf.Ttl,
 		Principals: conf.Principals,
@@ -69,7 +70,7 @@ func (i *Issuer) SignHostCert(conf *config.Config, pubKey, signedKey Sink) error
 		return fmt.Errorf("could not read public key data: %w", err)
 	}
 
-	req := SignHostKeyRequest{
+	req := signature.SignHostKeyRequest{
 		PublicKey:  string(pubKeyData),
 		Ttl:        conf.Ttl,
 		Principals: conf.Principals,
