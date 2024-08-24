@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"time"
 
 	"github.com/hashicorp/vault/api"
+	"github.com/hashicorp/vault/api/auth/approle"
 	"github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 	"github.com/soerenschneider/vault-ssh-cli/internal/signature"
@@ -15,7 +18,7 @@ import (
 
 type app struct {
 	vaultClient *api.Client
-	vaultAuth   vault.AuthMethod
+	vaultAuth   api.AuthMethod
 	signingImpl *vault.SignatureClient
 	issuer      *signature.Issuer
 }
@@ -36,11 +39,16 @@ func buildApp(conf *config.Config) *app {
 	app.vaultAuth, err = buildAuthImpl(app.vaultClient, conf)
 	dieOnErr(err, "could not build auth strategy")
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err = app.vaultAuth.Login(ctx, app.vaultClient)
+	dieOnErr(err, "could not login to vault")
+
 	vaultOpts := []vault.VaultOpts{
 		vault.SshMountPath(conf.VaultMountSsh),
 		vault.VaultRole(conf.VaultSshRole),
 	}
-	app.signingImpl, err = vault.NewVaultSigner(app.vaultClient, app.vaultAuth, vaultOpts...)
+	app.signingImpl, err = vault.NewVaultSigner(app.vaultClient.Logical(), vaultOpts...)
 	dieOnErr(err, "could not build rotation client")
 
 	renewStrategy, err := buildRenewalStrategy(conf)
@@ -110,20 +118,17 @@ func buildSignedKeySink(config *config.Config) (signature.Sink, error) {
 	return signature.NewAferoSink(expanded)
 }
 
-func buildAuthImpl(client *api.Client, conf *config.Config) (vault.AuthMethod, error) {
-	token := conf.VaultToken
-	if len(token) > 0 {
-		return auth.NewTokenAuth(token)
-	}
-
+func buildAuthImpl(client *api.Client, conf *config.Config) (api.AuthMethod, error) {
 	if len(conf.VaultRoleId) > 0 && (len(conf.VaultSecretId) > 0 || len(conf.VaultSecretIdFile) > 0) {
-		approleData := make(map[string]string)
-		approleData[auth.KeyRoleId] = conf.VaultRoleId
-		approleData[auth.KeySecretId] = conf.VaultSecretId
-		approleData[auth.KeySecretIdFile] = conf.VaultSecretIdFile
+		secretId := &approle.SecretID{}
+		if len(conf.VaultSecretIdFile) > 0 {
+			secretId.FromFile = conf.VaultSecretIdFile
+		} else {
+			secretId.FromString = conf.VaultSecretId
+		}
+		return approle.NewAppRoleAuth(conf.VaultRoleId, secretId)
 
-		return auth.NewAppRoleAuth(client, approleData)
 	}
 
-	return auth.NewTokenImplicitAuth(), nil
+	return &auth.NoAuth{}, nil
 }

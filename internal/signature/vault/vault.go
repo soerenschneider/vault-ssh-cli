@@ -15,31 +15,26 @@ import (
 
 const defaultSshMountPath = "ssh"
 
-type AuthMethod interface {
-	Authenticate() (string, error)
+type VaultClient interface {
+	ReadRaw(path string) (*api.Response, error)
+	Write(path string, data map[string]any) (*api.Secret, error)
 }
 
 type SignatureClient struct {
-	client       *api.Client
-	auth         AuthMethod
+	client       VaultClient
 	role         string
 	sshMountPath string
 }
 
 type VaultOpts func(client *SignatureClient) error
 
-func NewVaultSigner(client *api.Client, auth AuthMethod, opts ...VaultOpts) (*SignatureClient, error) {
+func NewVaultSigner(client VaultClient, opts ...VaultOpts) (*SignatureClient, error) {
 	if client == nil {
 		return nil, errors.New("nil client passed")
 	}
 
-	if auth == nil {
-		return nil, errors.New("nil auth method passed")
-	}
-
 	vault := &SignatureClient{
 		client:       client,
-		auth:         auth,
 		sshMountPath: defaultSshMountPath,
 	}
 
@@ -55,7 +50,7 @@ func NewVaultSigner(client *api.Client, auth AuthMethod, opts ...VaultOpts) (*Si
 
 func (c *SignatureClient) ReadCaCert() (string, error) {
 	path := fmt.Sprintf("%s/public_key", c.sshMountPath)
-	resp, err := c.client.Logical().ReadRaw(path)
+	resp, err := c.client.ReadRaw(path)
 	if err != nil {
 		if err != nil {
 			var respErr *api.ResponseError
@@ -77,18 +72,11 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 }
 
 func (c *SignatureClient) SignHostKey(req signature.SignHostKeyRequest) (string, error) {
-	log.Info().Msg("Trying to authenticate against vault")
-	token, err := c.auth.Authenticate()
-	if err != nil {
-		return "", fmt.Errorf("could not authenticate: %v", err)
-	}
-
-	c.client.SetToken(token)
 	log.Info().Msgf("Signing public key using role '%s'", c.role)
 
 	data := convertHostKeyRequest(req)
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
-	secret, err := c.client.Logical().Write(path, data)
+	secret, err := c.client.Write(path, data)
 	if err != nil {
 		var respErr *api.ResponseError
 		if errors.As(err, &respErr) && !shouldRetry(respErr.StatusCode) {
@@ -118,18 +106,11 @@ func convertHostKeyRequest(req signature.SignHostKeyRequest) map[string]any {
 }
 
 func (c *SignatureClient) SignUserKey(req signature.SignUserKeyRequest) (string, error) {
-	log.Info().Msg("Trying to authenticate against vault")
-	token, err := c.auth.Authenticate()
-	if err != nil {
-		return "", fmt.Errorf("could not authenticate: %v", err)
-	}
-
-	c.client.SetToken(token)
 	log.Info().Msgf("Signing public key using role '%s'", c.role)
 
 	data := convertUserKeyRequest(req)
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
-	secret, err := c.client.Logical().Write(path, data)
+	secret, err := c.client.Write(path, data)
 	if err != nil {
 		var respErr *api.ResponseError
 		if errors.As(err, &respErr) && !shouldRetry(respErr.StatusCode) {
