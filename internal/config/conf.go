@@ -38,7 +38,7 @@ type Config struct {
 	MetricsFile string `mapstructure:"metrics-file" validate:"omitempty,filepath"`
 	Debug       bool   `mapstructure:"debug"`
 
-	Ttl string `mapstructure:"ttl" validate:"ttl"`
+	Ttl string `mapstructure:"ttl" validate:"omitempty,ttl"`
 
 	VaultAddress      string `mapstructure:"vault-address"`
 	VaultToken        string `mapstructure:"vault-auth-token"`
