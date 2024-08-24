@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.1...v1.8.2) (2024-08-24)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/cenkalti/backoff/v3 from 3.0.0 to 3.2.2 ([#148](https://github.com/soerenschneider/vault-ssh-cli/issues/148)) ([c2c3270](https://github.com/soerenschneider/vault-ssh-cli/commit/c2c3270189c34c36e0c418407c0ed0937cf1dd4a))
+* **deps:** bump github.com/hashicorp/go-retryablehttp ([#159](https://github.com/soerenschneider/vault-ssh-cli/issues/159)) ([559a7b0](https://github.com/soerenschneider/vault-ssh-cli/commit/559a7b033de69581d7e820efd1fc143149fef574))
+* **deps:** bump golang.org/x/crypto from 0.23.0 to 0.26.0 ([#172](https://github.com/soerenschneider/vault-ssh-cli/issues/172)) ([8fe6254](https://github.com/soerenschneider/vault-ssh-cli/commit/8fe625416b474a9dcf7f384bc7759373c9fcd167))
+* **deps:** bump golang.org/x/sys from 0.20.0 to 0.24.0 ([#173](https://github.com/soerenschneider/vault-ssh-cli/issues/173)) ([199abf9](https://github.com/soerenschneider/vault-ssh-cli/commit/199abf959fa4d5c497cb53fcf0a504a8ccfdfc47))
+* **deps:** bump golang.org/x/term from 0.20.0 to 0.23.0 ([#174](https://github.com/soerenschneider/vault-ssh-cli/issues/174)) ([95e178e](https://github.com/soerenschneider/vault-ssh-cli/commit/95e178e09f5706b0c6993e771d1bfa813bf5b801))
+* fix duplicate method ([9159496](https://github.com/soerenschneider/vault-ssh-cli/commit/9159496326127d6bce5282e076be43412a8a5380))
+* remove duplicate login call ([788c724](https://github.com/soerenschneider/vault-ssh-cli/commit/788c7248c79e8c9f74c69d619956b94bd59fa2ee))
+
 ## [1.8.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.0...v1.8.1) (2024-06-10)
 
 
