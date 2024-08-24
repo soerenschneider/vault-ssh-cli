@@ -8,7 +8,6 @@ import (
 
 	"github.com/cenkalti/backoff/v3"
 	"github.com/hashicorp/vault/api"
-	log "github.com/rs/zerolog/log"
 	"go.uber.org/multierr"
 )
 
@@ -71,8 +70,6 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 }
 
 func (c *SignatureClient) SignHostKey(req SignHostKeyRequest) (string, error) {
-	log.Info().Msgf("Signing public key using role '%s'", c.role)
-
 	data := convertHostKeyRequest(req)
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Write(path, data)
@@ -105,8 +102,6 @@ func convertHostKeyRequest(req SignHostKeyRequest) map[string]any {
 }
 
 func (c *SignatureClient) SignUserKey(req SignUserKeyRequest) (string, error) {
-	log.Info().Msgf("Signing public key using role '%s'", c.role)
-
 	data := convertUserKeyRequest(req)
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Write(path, data)
