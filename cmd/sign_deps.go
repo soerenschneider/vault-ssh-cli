@@ -47,7 +47,6 @@ func buildApp(conf *config.Config) *app {
 
 	vaultOpts := []signature.VaultOpts{
 		signature.WithSshMountPath(conf.VaultMountSsh),
-		signature.WithVaultRole(conf.VaultSshRole),
 	}
 	app.signatureClient, err = signature.NewVaultSigner(app.vaultClient.Logical(), vaultOpts...)
 	dieOnErr(err, "could not build rotation client")

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/soerenschneider/vault-ssh-cli/internal"
-	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 )
 
 const (
@@ -15,7 +14,7 @@ const (
 
 type HappySignerDummy struct{}
 
-func (s *HappySignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
+func (s *HappySignerDummy) SignHostKey(req SignatureRequest) (string, error) {
 	return signedData, nil
 }
 
@@ -29,7 +28,7 @@ func (s *HappySignerDummy) ReadCaCert() (string, error) {
 
 type SadSignerDummy struct{}
 
-func (s *SadSignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
+func (s *SadSignerDummy) SignHostKey(req SignatureRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
@@ -49,7 +48,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 	type args struct {
 		pubKey    KeyStorage
 		signedKey KeyStorage
-		conf      *config.Config
+		req       SignatureRequest
 	}
 	tests := []struct {
 		name              string
@@ -67,9 +66,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &internal.BufferSink{},
-				conf: &config.Config{
-					Retries: 3,
-				},
+				req:       SignatureRequest{},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -83,9 +80,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &internal.BufferSink{Data: []byte(signedData)},
-				conf: &config.Config{
-					Retries: 3,
-				},
+				req:       SignatureRequest{},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -99,9 +94,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &internal.BufferSink{Data: []byte(signedData)},
-				conf: &config.Config{
-					Retries: 3,
-				},
+				req:       SignatureRequest{},
 			},
 			wantErr:           false,
 			wantSignatureData: signedData,
@@ -115,9 +108,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &internal.BufferSink{},
-				conf: &config.Config{
-					Retries: 3,
-				},
+				req:       SignatureRequest{},
 			},
 			wantErr:           true,
 			wantSignatureData: "",
@@ -131,9 +122,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 			args: args{
 				pubKey:    &internal.BufferSink{Data: []byte(randomSshPublicKey)},
 				signedKey: &internal.BufferSink{Data: []byte("garbage data, no ssh cert")},
-				conf: &config.Config{
-					Retries: 3,
-				},
+				req:       SignatureRequest{},
 			},
 			wantErr:           true,
 			wantSignatureData: "garbage data, no ssh cert",
@@ -145,7 +134,7 @@ func TestIssuer_SignHostCert(t *testing.T) {
 				signerImpl:    tt.fields.signerImpl,
 				issueStrategy: tt.fields.refreshImpl,
 			}
-			_, err := i.SignHostCert(tt.args.conf, tt.args.pubKey, tt.args.signedKey)
+			_, err := i.SignHostCert(tt.args.req, tt.args.pubKey, tt.args.signedKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SignatureService.SignHostCert() error = %v, wantErr %v", err, tt.wantErr)
 			}
