@@ -40,8 +40,8 @@ func ParseCertData(pubKeyBytes []byte) (CertInfo, error) {
 	return CertInfo{
 		Type:        cert.Type(),
 		Serial:      cert.Serial,
-		ValidBefore: time.Unix(int64(cert.ValidBefore), 0).UTC(),
-		ValidAfter:  time.Unix(int64(cert.ValidAfter), 0).UTC(),
+		ValidBefore: time.Unix(int64(cert.ValidBefore), 0).UTC(), //#nosec:G115
+		ValidAfter:  time.Unix(int64(cert.ValidAfter), 0).UTC(),  //#nosec:G115
 	}, nil
 }
 

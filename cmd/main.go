@@ -108,6 +108,7 @@ func setupLogLevel(debug bool) {
 }
 
 func initLogging() {
+	//#nosec:G115
 	if term.IsTerminal(int(os.Stdout.Fd())) {
 		log.Logger = log.Output(zerolog.ConsoleWriter{
 			Out:        os.Stderr,
