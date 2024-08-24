@@ -1,10 +1,14 @@
 package auth
 
-import "errors"
+import (
+	"context"
+
+	"github.com/hashicorp/vault/api"
+)
 
 type NoAuth struct {
 }
 
-func (t *NoAuth) Authenticate() (string, error) {
-	return "", errors.New("auth not supported")
+func (t *NoAuth) Login(ctx context.Context, client *api.Client) (*api.Secret, error) {
+	return &api.Secret{}, nil
 }
