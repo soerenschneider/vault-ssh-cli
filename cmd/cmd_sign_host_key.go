@@ -72,7 +72,14 @@ func signHostKey(conf *config.Config) error {
 	app := buildApp(conf)
 	keys := buildKeys(conf)
 
-	outcome, err := app.signatureService.SignHostCert(conf, keys.pub, keys.sign)
+	request := signature.SignatureRequest{
+		Ttl:        conf.Ttl,
+		Principals: conf.Principals,
+		Extensions: conf.Extensions,
+		VaultRole:  conf.VaultSshRole,
+	}
+
+	outcome, err := app.signatureService.SignHostCert(request, keys.pub, keys.sign)
 	writeLogs(outcome)
 	updateCertMetrics(outcome)
 	return err

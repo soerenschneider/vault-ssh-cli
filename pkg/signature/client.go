@@ -69,7 +69,7 @@ func (c *SignatureClient) ReadCaCert() (string, error) {
 	return string(data), nil
 }
 
-func (c *SignatureClient) SignHostKey(req SignHostKeyRequest) (string, error) {
+func (c *SignatureClient) SignHostKey(req SignatureRequest) (string, error) {
 	data := convertHostKeyRequest(req)
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Write(path, data)
@@ -84,7 +84,7 @@ func (c *SignatureClient) SignHostKey(req SignHostKeyRequest) (string, error) {
 	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func convertHostKeyRequest(req SignHostKeyRequest) map[string]any {
+func convertHostKeyRequest(req SignatureRequest) map[string]any {
 	data := map[string]interface{}{
 		"public_key": req.PublicKey,
 		"cert_type":  "host",
@@ -101,7 +101,7 @@ func convertHostKeyRequest(req SignHostKeyRequest) map[string]any {
 	return data
 }
 
-func (c *SignatureClient) SignUserKey(req SignUserKeyRequest) (string, error) {
+func (c *SignatureClient) SignUserKey(req SignatureRequest) (string, error) {
 	data := convertUserKeyRequest(req)
 	path := fmt.Sprintf("%s/sign/%s", c.sshMountPath, c.role)
 	secret, err := c.client.Write(path, data)
@@ -116,7 +116,7 @@ func (c *SignatureClient) SignUserKey(req SignUserKeyRequest) (string, error) {
 	return fmt.Sprintf("%s", secret.Data["signed_key"]), nil
 }
 
-func convertUserKeyRequest(req SignUserKeyRequest) map[string]any {
+func convertUserKeyRequest(req SignatureRequest) map[string]any {
 	data := map[string]interface{}{
 		"public_key": req.PublicKey,
 		"cert_type":  "user",

@@ -6,6 +6,7 @@ import (
 	log "github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
+	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -70,7 +71,14 @@ func signUserKey(conf *config.Config) error {
 	app := buildApp(conf)
 	keys := buildKeys(conf)
 
-	outcome, err := app.signatureService.SignUserCert(conf, keys.pub, keys.sign)
+	request := signature.SignatureRequest{
+		Ttl:        conf.Ttl,
+		Principals: conf.Principals,
+		Extensions: conf.Extensions,
+		VaultRole:  conf.VaultSshRole,
+	}
+
+	outcome, err := app.signatureService.SignUserCert(request, keys.pub, keys.sign)
 	writeLogs(outcome)
 	updateCertMetrics(outcome)
 	return err

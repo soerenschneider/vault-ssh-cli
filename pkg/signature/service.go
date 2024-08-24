@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/cenkalti/backoff/v3"
-	"github.com/soerenschneider/vault-ssh-cli/internal/config"
 )
 
 type CertType int
@@ -15,8 +14,8 @@ const (
 )
 
 type Signer interface {
-	SignUserKey(req SignUserKeyRequest) (string, error)
-	SignHostKey(req SignHostKeyRequest) (string, error)
+	SignUserKey(req SignatureRequest) (string, error)
+	SignHostKey(req SignatureRequest) (string, error)
 	ReadCaCert() (string, error)
 }
 
@@ -36,44 +35,40 @@ func NewSignatureService(signer Signer, refresh RefreshSignatureStrategy) (*Sign
 	return &SignatureService{signerImpl: signer, refreshImpl: refresh}, nil
 }
 
-func (i *SignatureService) SignUserCert(conf *config.Config, pubKey, signedKey KeyStorage) (*IssueResult, error) {
+func (i *SignatureService) SignUserCert(signRequest SignatureRequest, pubKey, signedKey KeyStorage) (*IssueResult, error) {
 	pubKeyData, err := pubKey.Read()
 	if err != nil {
 		return nil, fmt.Errorf("could not read public key data: %w", err)
 	}
 
-	req := SignUserKeyRequest{
+	req := SignatureRequest{
 		PublicKey:  string(pubKeyData),
-		Ttl:        conf.Ttl,
-		Principals: conf.Principals,
-		Extensions: conf.Extensions,
+		Ttl:        signRequest.Ttl,
+		Principals: signRequest.Principals,
+		Extensions: signRequest.Extensions,
+		VaultRole:  signRequest.VaultRole,
 	}
 
 	signature := func() (string, error) {
 		return i.signerImpl.SignUserKey(req)
 	}
 
-	return i.signCert(signedKey, signature, conf.Retries)
+	return i.signCert(signedKey, signature, 3)
 }
 
-func (i *SignatureService) SignHostCert(conf *config.Config, pubKey, signedKey KeyStorage) (*IssueResult, error) {
+func (i *SignatureService) SignHostCert(req SignatureRequest, pubKey, signedKey KeyStorage) (*IssueResult, error) {
 	pubKeyData, err := pubKey.Read()
 	if err != nil {
 		return nil, fmt.Errorf("could not read public key data: %w", err)
 	}
 
-	req := SignHostKeyRequest{
-		PublicKey:  string(pubKeyData),
-		Ttl:        conf.Ttl,
-		Principals: conf.Principals,
-		Extensions: conf.Extensions,
-	}
+	req.PublicKey = string(pubKeyData)
 
 	signature := func() (string, error) {
 		return i.signerImpl.SignHostKey(req)
 	}
 
-	return i.signCert(signedKey, signature, conf.Retries)
+	return i.signCert(signedKey, signature, 3)
 }
 
 func (i *SignatureService) signCert(signedKey KeyStorage, performSignature func() (string, error), retries int) (*IssueResult, error) {

@@ -19,7 +19,7 @@ func (s *HappySignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
 	return signedData, nil
 }
 
-func (s *HappySignerDummy) SignUserKey(req SignUserKeyRequest) (string, error) {
+func (s *HappySignerDummy) SignUserKey(req SignatureRequest) (string, error) {
 	return signedData, nil
 }
 
@@ -33,7 +33,7 @@ func (s *SadSignerDummy) SignHostKey(req SignHostKeyRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
-func (s *SadSignerDummy) SignUserKey(req SignUserKeyRequest) (string, error) {
+func (s *SadSignerDummy) SignUserKey(req SignatureRequest) (string, error) {
 	return "", fmt.Errorf("sad sad sad")
 }
 
