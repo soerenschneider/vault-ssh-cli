@@ -44,8 +44,6 @@ func buildApp(conf *config.Config) *app {
 	_, err = app.vaultAuth.Login(ctx, app.vaultClient)
 	dieOnErr(err, "could not login to vault")
 
-	app.vaultAuth.Login(context.Background(), app.vaultClient)
-
 	vaultOpts := []vault.VaultOpts{
 		vault.SshMountPath(conf.VaultMountSsh),
 		vault.VaultRole(conf.VaultSshRole),
