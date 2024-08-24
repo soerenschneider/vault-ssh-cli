@@ -19,7 +19,7 @@ var (
 		FLAG_VAULT_AUTH_TOKEN:             {},
 	}
 
-	validate = validator.New()
+	validate *validator.Validate
 	once     sync.Once
 )
 
@@ -68,6 +68,14 @@ func (c *Config) ExpandPaths() {
 }
 
 func Validate(s any) error {
+	once.Do(func() {
+		validate = validator.New()
+
+		if err := validate.RegisterValidation("ttl", validateTtl); err != nil {
+			log.Fatal().Err(err).Msg("could not build custom validation 'ttl'")
+		}
+	})
+
 	return validate.Struct(s)
 }
 
@@ -85,18 +93,6 @@ func Print(c any) {
 			}
 		}
 	}
-}
-
-func (c *Config) Validate() error {
-	once.Do(func() {
-		validate = validator.New()
-
-		if err := validate.RegisterValidation("ttl", validateTtl); err != nil {
-			log.Fatal().Err(err).Msg("could not build custom validation 'ttl'")
-		}
-	})
-
-	return validate.Struct(c)
 }
 
 func validateTtl(fl validator.FieldLevel) bool {
