@@ -110,6 +110,7 @@ func writeLogs(result *signature.IssueResult) {
 func updateCertMetrics(result *signature.IssueResult) {
 	if result == nil {
 		log.Warn().Msg("can not update metrics, empty signature result")
+		return
 	}
 
 	var certInfo *signature.CertInfo
