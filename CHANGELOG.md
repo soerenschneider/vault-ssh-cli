@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.3](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.2...v1.8.3) (2024-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-playground/validator/v10 ([#185](https://github.com/soerenschneider/vault-ssh-cli/issues/185)) ([da821bb](https://github.com/soerenschneider/vault-ssh-cli/commit/da821bbf98648ce3e63bdf5e3f76793d9c681e4c))
+* **deps:** bump github.com/prometheus/client_golang ([#186](https://github.com/soerenschneider/vault-ssh-cli/issues/186)) ([056de3a](https://github.com/soerenschneider/vault-ssh-cli/commit/056de3a5a9519db44b42e2f8f1021f3711bc2077))
+* **deps:** bump github.com/prometheus/common from 0.54.0 to 0.59.1 ([#187](https://github.com/soerenschneider/vault-ssh-cli/issues/187)) ([39a8278](https://github.com/soerenschneider/vault-ssh-cli/commit/39a82784e843d7e2a2e204014126e4f231d63a01))
+* **deps:** bump github.com/spf13/cobra from 1.8.0 to 1.8.1 ([#182](https://github.com/soerenschneider/vault-ssh-cli/issues/182)) ([9c4a47d](https://github.com/soerenschneider/vault-ssh-cli/commit/9c4a47d593dcad96d926eab475a6ccc391954cee))
+* **deps:** bump golang.org/x/term from 0.23.0 to 0.24.0 ([#184](https://github.com/soerenschneider/vault-ssh-cli/issues/184)) ([0825665](https://github.com/soerenschneider/vault-ssh-cli/commit/08256653b31dc0d956213f8bf634a73039e8f4c8))
+* fix vault auth ([be3aa87](https://github.com/soerenschneider/vault-ssh-cli/commit/be3aa8750b2ea5a1d8e2ec28673bdcd14101d0a1))
+
 ## [1.8.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.1...v1.8.2) (2024-08-24)
 
 
