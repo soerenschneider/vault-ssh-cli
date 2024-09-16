@@ -7,7 +7,7 @@ toolchain go1.23.0
 require (
 	github.com/cenkalti/backoff/v3 v3.2.2
 	github.com/go-playground/validator/v10 v10.22.1
-	github.com/hashicorp/vault/api v1.14.0
+	github.com/hashicorp/vault/api v1.15.0
 	github.com/hashicorp/vault/api/auth/approle v0.7.0
 	github.com/prometheus/client_golang v1.20.3
 	github.com/prometheus/common v0.59.1
@@ -24,6 +24,7 @@ require (
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
