@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.9.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.9.0...v1.9.1) (2025-01-01)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-playground/validator/v10 ([#213](https://github.com/soerenschneider/vault-ssh-cli/issues/213)) ([4b51314](https://github.com/soerenschneider/vault-ssh-cli/commit/4b513147eb3c1cec0e2d2a08729bad2f03341150))
+* **deps:** bump github.com/prometheus/common from 0.59.1 to 0.61.0 ([#212](https://github.com/soerenschneider/vault-ssh-cli/issues/212)) ([284759d](https://github.com/soerenschneider/vault-ssh-cli/commit/284759d17d7ab17268ac1cd27777d1309febbb72))
+* **deps:** bump golang from 1.21.1 to 1.23.4 ([#211](https://github.com/soerenschneider/vault-ssh-cli/issues/211)) ([4ea1cef](https://github.com/soerenschneider/vault-ssh-cli/commit/4ea1cef1316f76b317f1e1afedda81980244ef10))
+
 ## [1.9.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.3...v1.9.0) (2025-01-01)
 
 
