@@ -108,7 +108,7 @@ func (i *SignatureService) signCert(signedKey KeyStorage, performSignature func(
 
 	var backoffImpl backoff.BackOff
 	backoffImpl = backoff.NewExponentialBackOff()
-	backoffImpl = backoff.WithMaxRetries(backoffImpl, uint64(retries))
+	backoffImpl = backoff.WithMaxRetries(backoffImpl, uint64(retries)) //nolint G115
 	if err := backoff.Retry(op, backoffImpl); err != nil {
 		return ret, fmt.Errorf("could not sign public key: %w", err)
 	}

@@ -68,7 +68,7 @@ func readCaCert(conf *config.Config) error {
 
 	var backoffImpl backoff.BackOff
 	backoffImpl = backoff.NewExponentialBackOff()
-	backoffImpl = backoff.WithMaxRetries(backoffImpl, uint64(conf.Retries))
+	backoffImpl = backoff.WithMaxRetries(backoffImpl, uint64(conf.Retries)) //nolint G115
 	if err := backoff.Retry(op, backoffImpl); err != nil {
 		return fmt.Errorf("could not read ca: %w", err)
 	}
