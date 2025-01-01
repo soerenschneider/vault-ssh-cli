@@ -6,7 +6,7 @@ toolchain go1.23.4
 
 require (
 	github.com/cenkalti/backoff/v3 v3.2.2
-	github.com/go-playground/validator/v10 v10.22.1
+	github.com/go-playground/validator/v10 v10.23.0
 	github.com/hashicorp/vault/api v1.15.0
 	github.com/hashicorp/vault/api/auth/approle v0.8.0
 	github.com/hashicorp/vault/api/auth/kubernetes v0.8.0
