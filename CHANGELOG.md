@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.9.0](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.3...v1.9.0) (2025-01-01)
+
+
+### Features
+
+* support Vault Kubernetes auth method and writing/reading from Kubernetes secrets ([3603fe9](https://github.com/soerenschneider/vault-ssh-cli/commit/3603fe9d2eeac9d90a47eda6105fdf4d040b5b7c))
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/hashicorp/vault/api from 1.14.0 to 1.15.0 ([#190](https://github.com/soerenschneider/vault-ssh-cli/issues/190)) ([945532f](https://github.com/soerenschneider/vault-ssh-cli/commit/945532f84b5a44c40a78866f5727cc7ad1b9d1e9))
+* **deps:** bump github.com/prometheus/client_golang ([#199](https://github.com/soerenschneider/vault-ssh-cli/issues/199)) ([0a36847](https://github.com/soerenschneider/vault-ssh-cli/commit/0a368477d9ef51de7f99c2cf51f93b93fba2e8af))
+* **deps:** bump golang.org/x/crypto from 0.26.0 to 0.31.0 ([#208](https://github.com/soerenschneider/vault-ssh-cli/issues/208)) ([60f1102](https://github.com/soerenschneider/vault-ssh-cli/commit/60f11023d5417400ace78063a1fd84730539aba2))
+* **deps:** bump golang.org/x/term from 0.24.0 to 0.27.0 ([#206](https://github.com/soerenschneider/vault-ssh-cli/issues/206)) ([8dfa5b8](https://github.com/soerenschneider/vault-ssh-cli/commit/8dfa5b87de2d3523ee0b74da4adf0c2f35ca063d))
+
 ## [1.8.3](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.8.2...v1.8.3) (2024-09-09)
 
 
