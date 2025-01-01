@@ -40,14 +40,16 @@ type Config struct {
 
 	Ttl string `mapstructure:"ttl" validate:"omitempty,ttl"`
 
-	VaultAddress      string `mapstructure:"vault-address"`
-	VaultToken        string `mapstructure:"vault-auth-token"`
-	VaultRoleId       string `mapstructure:"vault-auth-approle-role-id"`
-	VaultSecretId     string `mapstructure:"vault-auth-approle-secret-id"`
-	VaultSecretIdFile string `mapstructure:"vault-auth-approle-secret-id-file" validate:"omitempty,file"`
-	VaultMountApprole string `mapstructure:"vault-auth-approle-mount"`
-	VaultMountSsh     string `mapstructure:"vault-ssh-mount" validate:"required"`
-	VaultSshRole      string `mapstructure:"vault-ssh-role" validate:"required"`
+	VaultAddress         string `mapstructure:"vault-address"`
+	VaultToken           string `mapstructure:"vault-auth-token"`
+	VaultKubernetesRole  string `mapstructure:"vault-auth-kubernetes-role" validate:"omitempty"`
+	VaultKubernetesMount string `mapstructure:"vault-auth-kubernetes-mount" validate:"omitempty"`
+	VaultRoleId          string `mapstructure:"vault-auth-approle-role-id"`
+	VaultSecretId        string `mapstructure:"vault-auth-approle-secret-id"`
+	VaultSecretIdFile    string `mapstructure:"vault-auth-approle-secret-id-file" validate:"omitempty,file"`
+	VaultMountApprole    string `mapstructure:"vault-auth-approle-mount"`
+	VaultMountSsh        string `mapstructure:"vault-ssh-mount" validate:"required"`
+	VaultSshRole         string `mapstructure:"vault-ssh-role" validate:"required"`
 }
 
 func (c *Config) ExpandPaths() {

@@ -46,6 +46,8 @@ func main() {
 
 	root.PersistentFlags().StringP(config.FLAG_VAULT_ADDRESS, "a", "", "Vault instance to connect to. If not specified, falls back to env var VAULT_ADDR.")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_TOKEN, "t", "", "Vault token to use for authentication. Can not be used in conjunction with AppRole login data.")
+	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_KUBERNETES_ROLE, "", "", "Vault role for Kubernetes authentication. Can not be used in conjunction with AppRole login data.")
+	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_KUBERNETES_MOUNT, "", "", "Vault mount path for Kubernetes authentication.")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_APPROLE_ROLE_ID, "", "", "Vault role_id to use for AppRole login. Can not be used in conjuction with Vault token flag.")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_APPROLE_SECRET_ID, "", "", "Vault secret_id to use for AppRole login. Can not be used in conjuction with Vault token flag.")
 	root.PersistentFlags().StringP(config.FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE, "", "", "Flat file to read Vault secret_id from. Can not be used in conjuction with Vault token flag.")

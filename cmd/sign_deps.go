@@ -3,10 +3,13 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/api/auth/approle"
+	vaultKubernetesAuth "github.com/hashicorp/vault/api/auth/kubernetes"
 	"github.com/rs/zerolog/log"
 	"github.com/soerenschneider/vault-ssh-cli/internal"
 	"github.com/soerenschneider/vault-ssh-cli/internal/config"
@@ -14,7 +17,14 @@ import (
 	"github.com/soerenschneider/vault-ssh-cli/internal/vault/auth"
 	"github.com/soerenschneider/vault-ssh-cli/pkg"
 	"github.com/soerenschneider/vault-ssh-cli/pkg/signature"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
+
+const k8sPrefix = "k8s://"
+
+// shared client to prevent multiple instances
+var kubeClient *kubernetes.Clientset
 
 type app struct {
 	vaultClient *api.Client
@@ -87,6 +97,22 @@ func buildRenewalStrategy(config *config.Config) (signature.IssueStrategy, error
 	return signature.NewPercentageStrategy(config.CertificateLifetimeThresholdPercentage)
 }
 
+func buildKubeClient() (*kubernetes.Clientset, error) {
+	if kubeClient == nil {
+		config, err := rest.InClusterConfig()
+		if err != nil {
+			return nil, fmt.Errorf("failed to load in-cluster config: %v", err)
+		}
+
+		kubeClient, err = kubernetes.NewForConfig(config)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create Kubernetes clientset: %v", err)
+		}
+	}
+
+	return kubeClient, nil
+}
+
 func buildPublicKeyStorage(config *config.Config) (signature.KeyStorage, error) {
 	if nil == config {
 		return nil, errors.New("empty config supplied")
@@ -94,6 +120,15 @@ func buildPublicKeyStorage(config *config.Config) (signature.KeyStorage, error) 
 
 	if len(config.PublicKeyFile) == 0 {
 		return nil, errors.New("no public key file supplied")
+	}
+
+	if strings.HasPrefix(config.PublicKeyFile, k8sPrefix) {
+		client, err := buildKubeClient()
+		if err != nil {
+			return nil, err
+		}
+		secretName := strings.ReplaceAll(config.PublicKeyFile, k8sPrefix, "")
+		return internal.NewKubernetesSecret(client, secretName, "pub", "")
 	}
 
 	expanded := pkg.GetExpandedFile(config.PublicKeyFile)
@@ -109,6 +144,15 @@ func buildSignedKeyStorage(config *config.Config) (signature.KeyStorage, error) 
 		return nil, errors.New("no signed key file supplied")
 	}
 
+	if strings.HasPrefix(config.SignedKeyFile, k8sPrefix) {
+		client, err := buildKubeClient()
+		if err != nil {
+			return nil, err
+		}
+		secretName := strings.ReplaceAll(config.SignedKeyFile, k8sPrefix, "")
+		return internal.NewKubernetesSecret(client, secretName, "signature", "")
+	}
+
 	expanded := pkg.GetExpandedFile(config.SignedKeyFile)
 	return internal.NewAferoSink(expanded)
 }
@@ -122,7 +166,15 @@ func buildAuthImpl(client *api.Client, conf *config.Config) (api.AuthMethod, err
 			secretId.FromString = conf.VaultSecretId
 		}
 		return approle.NewAppRoleAuth(conf.VaultRoleId, secretId)
+	}
 
+	if strings.TrimSpace(conf.VaultKubernetesRole) != "" {
+		var opts []vaultKubernetesAuth.LoginOption
+		if strings.TrimSpace(conf.VaultKubernetesMount) != "" {
+			opts = append(opts, vaultKubernetesAuth.WithMountPath(conf.VaultKubernetesMount))
+		}
+
+		return vaultKubernetesAuth.NewKubernetesAuth(conf.VaultKubernetesRole, opts...)
 	}
 
 	return &auth.NoAuth{}, nil

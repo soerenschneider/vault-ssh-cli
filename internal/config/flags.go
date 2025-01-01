@@ -3,6 +3,8 @@ package config
 const (
 	FLAG_VAULT_ADDRESS                     = "vault-address"
 	FLAG_VAULT_AUTH_TOKEN                  = "vault-auth-token" // #nosec: G101
+	FLAG_VAULT_AUTH_KUBERNETES_ROLE        = "vault-auth-kubernetes-role"
+	FLAG_VAULT_AUTH_KUBERNETES_MOUNT       = "vault-auth-kubernetes-mount"
 	FLAG_VAULT_AUTH_APPROLE_ROLE_ID        = "vault-auth-approle-role-id"
 	FLAG_VAULT_AUTH_APPROLE_SECRET_ID      = "vault-auth-approle-secret-id"      // #nosec: G101
 	FLAG_VAULT_AUTH_APPROLE_SECRET_ID_FILE = "vault-auth-approle-secret-id-file" // #nosec: G101
