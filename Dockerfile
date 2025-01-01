@@ -1,4 +1,4 @@
-FROM golang:1.21.1 as builder
+FROM golang:1.23.4 as builder
 
 ENV MODULE=github.com/soerenschneider/vault-ssh-cli
 ENV CGO_ENABLED=0
