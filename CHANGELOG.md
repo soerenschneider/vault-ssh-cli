@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.2](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.9.1...v1.9.2) (2025-01-04)
+
+
+### Bug Fixes
+
+* fix 'ttl' parameter ([a53f881](https://github.com/soerenschneider/vault-ssh-cli/commit/a53f8819a02bc1922dc49977a49f01513899477b))
+* fix implicit auth ([96666d1](https://github.com/soerenschneider/vault-ssh-cli/commit/96666d16ac7363cb3bd0a21fa503da43134b1ca8))
+
 ## [1.9.1](https://github.com/soerenschneider/vault-ssh-cli/compare/v1.9.0...v1.9.1) (2025-01-01)
 
 
