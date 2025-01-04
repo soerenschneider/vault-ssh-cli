@@ -98,7 +98,7 @@ func Print(c any) {
 }
 
 func validateTtl(fl validator.FieldLevel) bool {
-	// Get the field value and check if it's a slice
+	// Get the field value and check if it's a string
 	field := fl.Field()
 	if field.Kind() != reflect.String {
 		return false
